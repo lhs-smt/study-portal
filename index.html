@@ -11,12 +11,17 @@
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .card-shadow { box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); }
-    @keyframes flyPopup {
-      0% { opacity: 0; transform: translate(-50%, 10px) scale(0.9); }
-      50% { opacity: 1; transform: translate(-50%, -5px) scale(1.05); }
-      100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    
+    /* Animation: Pops in, floats upward, and disappears completely */
+    @keyframes flyAndFade {
+      0% { opacity: 0; transform: translate(-50%, 15px) scale(0.85); }
+      15% { opacity: 1; transform: translate(-50%, 0) scale(1.05); }
+      25% { transform: translate(-50%, -2px) scale(1); }
+      75% { opacity: 1; transform: translate(-50%, -20px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -45px) scale(0.9); }
     }
-    .animate-fly-popup { animation: flyPopup 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    .animate-fly-popup { animation: flyAndFade 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
     @keyframes floatIn {
       0% { opacity: 0; transform: translateY(6px); }
       100% { opacity: 1; transform: translateY(0); }
@@ -30,9 +35,7 @@
   <header class="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center font-black text-emerald-400 text-lg">
-          LHS
-        </div>
+        <img src="https://raw.githubusercontent.com/lhs-smt/studyspace/main/lhs-logo.png" alt="LHS Logo" class="w-10 h-10 object-contain rounded-xl bg-slate-900 border border-slate-800 p-1" />
         <div>
           <h1 class="text-sm font-extrabold tracking-tight text-white">L. Hithadhoo School</h1>
           <p class="text-[11px] font-semibold text-slate-400">Studyspace Learning Portal</p>
@@ -107,9 +110,7 @@
   <div id="loginModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
     <div class="w-full max-w-md p-6 rounded-2xl bg-slate-900 border border-slate-800 card-shadow">
       <div class="text-center mb-6">
-        <div class="w-12 h-12 mx-auto mb-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center font-black text-emerald-400 text-xl">
-          LHS
-        </div>
+        <img src="https://raw.githubusercontent.com/lhs-smt/studyspace/main/lhs-logo.png" alt="LHS Logo" class="w-14 h-14 mx-auto mb-3 object-contain rounded-2xl bg-slate-950 border border-slate-800 p-2" />
         <h2 class="text-xl font-extrabold text-white">Portal Authentication</h2>
         <p class="text-xs text-slate-400 mt-1">Sign in with your school account credentials</p>
       </div>
@@ -492,7 +493,7 @@
 
       qCard.appendChild(optsContainer);
 
-      if (lockedQuestions[idx]) {
+      if (lockedQuestions[idx] && userAnswers[idx]?.showFeedback) {
         const feedback = document.createElement("div");
         feedback.className = "absolute left-1/2 bottom-12 z-20 pointer-events-none transform -translate-x-1/2 px-4 py-2 bg-emerald-950/95 border border-emerald-500 text-emerald-200 text-xs font-extrabold rounded-full shadow-2xl backdrop-blur-md animate-fly-popup flex items-center gap-1.5 whitespace-nowrap";
         feedback.innerText = userAnswers[idx].feedbackMsg;
@@ -547,7 +548,7 @@
       const msgList = isCorrect ? PRAISE_MESSAGES : ENCOURAGEMENT_MESSAGES;
       const feedbackMsg = msgList[Math.floor(Math.random() * msgList.length)];
 
-      userAnswers[qIdx] = { selected: selectedOptId, feedbackMsg };
+      userAnswers[qIdx] = { selected: selectedOptId, feedbackMsg, showFeedback: true };
       lockedQuestions[qIdx] = true;
 
       const answeredCount = Object.keys(lockedQuestions).length;
@@ -555,6 +556,13 @@
 
       renderQuizQuestions();
       loadQuizIndex();
+
+      // Automatically hide feedback popup after 1.8 seconds (when animation completes)
+      setTimeout(() => {
+        if (userAnswers[qIdx]) {
+          userAnswers[qIdx].showFeedback = false;
+        }
+      }, 1800);
     }
 
     async function submitQuiz() {
