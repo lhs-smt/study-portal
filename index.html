@@ -269,6 +269,16 @@
       return array;
     }
 
+    function getSavedUnitProgress(quizId) {
+      const data = localStorage.getItem(`unit_progress_${quizId}`);
+      return data ? JSON.parse(data) : { answered: 0, total: 30, percent: 0 };
+    }
+
+    function saveUnitProgress(quizId, answeredCount, totalCount) {
+      const percent = totalCount > 0 ? Math.round((answeredCount / totalCount) * 100) : 0;
+      localStorage.setItem(`unit_progress_${quizId}`, JSON.stringify({ answered: answeredCount, total: totalCount, percent }));
+    }
+
     async function handleLoginSubmit(e) {
       e.preventDefault();
       const email = document.getElementById("emailInput").value.trim().toLowerCase();
@@ -388,15 +398,28 @@
         }
 
         list.forEach(q => {
+          const prog = getSavedUnitProgress(q.quizId);
           grid.innerHTML += `
             <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 card-shadow flex flex-col justify-between">
               <div>
                 <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-800 text-emerald-400 border border-slate-700/50">${q.subject}</span>
                 <h3 class="font-bold text-white text-base mt-2">${q.unit}</h3>
-                <p class="text-xs text-slate-400 mb-4">${q.title}</p>
+                <p class="text-xs text-slate-400 mb-3">${q.title}</p>
+                
+                <!-- Unit Card Progress Bar -->
+                <div class="mb-4">
+                  <div class="flex justify-between items-center text-[11px] font-semibold text-slate-400 mb-1">
+                    <span>${prog.answered > 0 ? 'Attempt Progress' : 'Unattempted'}</span>
+                    <span class="text-emerald-400">${prog.percent}% (${prog.answered}/${prog.total})</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${prog.percent}%"></div>
+                  </div>
+                </div>
               </div>
+
               <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.title}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all cursor-pointer">
-                Start Unit Quiz &rarr;
+                ${prog.answered > 0 ? 'Continue Unit Quiz &rarr;' : 'Start Unit Quiz &rarr;'}
               </button>
             </div>
           `;
@@ -420,14 +443,15 @@
       const res = await fetch(`${GAS_API_URL}?action=getQuiz&sheetId=${sheetId}`);
       const fetchedQuestions = await res.json();
       
-      // Shuffle questions and their internal options
+      // Shuffle questions and limit to 30 questions
       if (Array.isArray(fetchedQuestions)) {
-        activeQuestions = shuffleArray(fetchedQuestions).map(q => {
+        const shuffled = shuffleArray(fetchedQuestions).map(q => {
           if (q.options && Array.isArray(q.options)) {
             q.options = shuffleArray([...q.options]);
           }
           return q;
         });
+        activeQuestions = shuffled.slice(0, 30);
       } else {
         activeQuestions = [];
       }
@@ -563,7 +587,13 @@
 
       userAnswers[qIdx] = { selected: selectedOptId, feedbackMsg };
       lockedQuestions[qIdx] = true;
+
+      // Persist individual progress locally to update Unit Cards
+      const answeredCount = Object.keys(lockedQuestions).length;
+      saveUnitProgress(activeQuiz.quizId, answeredCount, activeQuestions.length);
+
       renderQuizQuestions();
+      loadQuizIndex(); // Instantly update practice unit progress bars
     }
 
     async function submitQuiz() {
