@@ -1,241 +1,469 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lhithadhoo School - Study Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L. Hithadhoo School - Student Study Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
   <style>
-    :root { --primary: #0066cc; --success: #28a745; --danger: #dc3545; --bg: #f4f6f9; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-    .container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h1, h2 { color: #333; }
-    .btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
-    .btn:disabled { background: #ccc; cursor: not-allowed; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
-    .card { border: 1px solid #e0e0e0; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-    .card:hover { border-color: var(--primary); background: #f0f7ff; }
-    .q-card { border-bottom: 2px solid #eee; padding: 20px 0; }
-    .opt-btn { display: block; width: 100%; text-align: left; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; }
-    .opt-btn.correct { background: #d4edda; border-color: var(--success); color: #155724; font-weight: bold; }
-    .opt-btn.incorrect { background: #f8d7da; border-color: var(--danger); color: #721c24; }
-    .explanation { background: #e9ecef; padding: 12px; border-left: 4px solid var(--primary); margin-top: 10px; border-radius: 4px; font-size: 14px; }
-    .q-img { max-width: 100%; height: auto; border-radius: 6px; margin: 10px 0; }
-    .hidden { display: none; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-    th { background: #f2f2f2; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03); }
+    .card-shadow:hover { box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 10px -2px rgba(0, 0, 0, 0.04); }
   </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-900 min-h-screen antialiased flex flex-col">
 
-<div class="container">
-  <!-- LOGIN VIEW -->
-  <div id="view-login">
-    <h1>Lhithadhoo School Study Portal</h1>
-    <p>Enter your school email address to get started:</p>
-    <input type="email" id="input-email" placeholder="student@lhithadhooschool.edu.mv" style="width:100%; padding:10px; box-sizing:border-box;">
-    <button class="btn" onclick="login()">Enter Portal</button>
+  <!-- TOP NAVBAR -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-lg shadow-md shadow-emerald-500/20">
+          LH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-900 text-base sm:text-lg tracking-tight">L. Hithadhoo School</span>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">Study Portal</span>
+          </div>
+          <p class="text-[11px] text-slate-500 hidden sm:block">Automated Evaluation &amp; Curriculum Portal</p>
+        </div>
+      </div>
+
+      <div id="navUserSection" class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800">
+          <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Google Apps Script Connected</span>
+        </div>
+        <div id="userProfileTag" class="flex items-center gap-2 pl-2 border-l border-slate-200">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LOGIN MODAL / OVERLAY -->
+  <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white text-center">
+        <div class="inline-flex h-12 w-12 rounded-xl bg-white/20 items-center justify-center text-xl font-bold mb-2">
+          🎓
+        </div>
+        <h2 class="text-xl font-bold">L. Hithadhoo School</h2>
+        <p class="text-xs text-emerald-100 mt-1">Student &amp; Faculty Study Portal</p>
+      </div>
+
+      <form id="loginForm" class="p-6 space-y-4" onsubmit="handleLoginSubmit(event)">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">School Email Address</label>
+          <input 
+            type="email" 
+            id="emailInput" 
+            required 
+            placeholder="name@lhithadhooschool.edu.mv"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 outline-none"
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          id="loginBtn"
+          class="w-full py-2.5 rounded-xl font-semibold text-xs text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all"
+        >
+          Authenticate &amp; Enter Portal &rarr;
+        </button>
+      </form>
+    </div>
   </div>
 
-  <!-- DASHBOARD VIEW -->
-  <div id="view-dashboard" class="hidden">
-    <h2>Welcome, <span id="user-display"></span></h2>
-    <button class="btn" onclick="showLeaderboard()">🏆 View Leaderboard</button>
-    <hr>
-    <h3>Select a Quiz</h3>
-    <div id="quiz-grid" class="grid">Loading quizzes...</div>
+  <!-- MAIN STUDY PORTAL CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-8">
+
+    <!-- DASHBOARD -->
+    <section id="dashboardSection" class="space-y-5">
+      <!-- Teacher View Banner -->
+      <div id="teacherBanner" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="h-9 w-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">SMT</span>
+          <div>
+            <div class="text-xs font-bold text-amber-900">Teacher &amp; Faculty View Active</div>
+            <div class="text-[11px] text-amber-700">Displaying aggregate student attempts and performance records</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div id="studentStatsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+          <div class="text-slate-500 text-xs font-semibold mb-2">BEST RECORDED SCORE</div>
+          <div id="statAvgScore" class="text-3xl font-extrabold text-slate-900">0%</div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+          <div class="text-slate-500 text-xs font-semibold mb-2">FIRST-TRY 100s</div>
+          <div id="statFirstTry" class="text-3xl font-extrabold text-slate-900">0</div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+          <div class="text-slate-500 text-xs font-semibold mb-2">TOTAL ATTEMPTS LOGGED</div>
+          <div id="statAttempts" class="text-3xl font-extrabold text-slate-900">0</div>
+        </div>
+      </div>
+
+      <!-- Teacher View Table -->
+      <div id="teacherTableContainer" class="hidden bg-white rounded-2xl border border-slate-200 p-5 card-shadow">
+        <h3 class="text-base font-bold text-slate-900 mb-3">Student Performance Overview</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-200 bg-slate-50 text-slate-500">
+                <th class="p-3">Student Email</th>
+                <th class="p-3">Total Attempts</th>
+                <th class="p-3">First-Try 100s</th>
+                <th class="p-3">Highest Score</th>
+              </tr>
+            </thead>
+            <tbody id="teacherTableBody">
+              <tr><td colspan="4" class="p-3 text-slate-400">Loading student records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ SELECTOR -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Available Practice Units</h2>
+          <p class="text-xs text-slate-500">Select any syllabus unit to take an interactive quiz</p>
+        </div>
+      </div>
+
+      <div id="quizCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="text-xs text-slate-400">Loading published units...</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- INTERACTIVE QUIZ MODAL -->
+  <div id="quizModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+    <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div>
+          <span id="quizSubjectTag" class="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-100 text-emerald-800">Subject</span>
+          <h3 id="quizModalTitle" class="text-base font-bold text-slate-900 mt-1">Unit Quiz</h3>
+        </div>
+        <button onclick="closeQuizModal()" class="text-slate-400 hover:text-slate-700 text-xl font-bold">&times;</button>
+      </div>
+
+      <div id="quizQuestionBody" class="p-6 overflow-y-auto space-y-4 flex-1">
+        <!-- Questions rendered dynamically -->
+      </div>
+
+      <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 flex justify-end">
+        <button onclick="submitQuiz()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl">
+          Submit Final Quiz Score
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- QUIZ ENGINE VIEW -->
-  <div id="view-quiz" class="hidden">
-    <button onclick="showDashboard()">← Back to Dashboard</button>
-    <h2 id="quiz-title">Quiz</h2>
-    <div id="questions-container"></div>
-    <button class="btn" id="btn-submit-quiz" onclick="submitQuiz()" style="margin-top:20px;">Submit Quiz Attempt</button>
-  </div>
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
+    L. Hithadhoo School Study Portal &copy; 2026
+  </footer>
 
-  <!-- LEADERBOARD VIEW -->
-  <div id="view-leaderboard" class="hidden">
-    <button onclick="showDashboard()">← Back to Dashboard</button>
-    <h2>Peer Leaderboard</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Student</th>
-          <th>100% First-Try Count</th>
-          <th>Best Score</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboard-body"></tbody>
-    </table>
-  </div>
-</div>
+  <!-- SCRIPT -->
+  <script>
+    const GAS_API_URL = "https://script.google.com/a/macros/lhithadhooschool.edu.mv/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec";
 
-<script>
-  const API_URL = "https://script.google.com/a/macros/lhithadhooschool.edu.mv/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec";
-  let currentUser = "";
-  let currentQuiz = null;
-  let activeQuestions = [];
-  let userAnswers = {};
-  let lockedQuestions = {};
-  let attemptCount = 1;
+    const PRAISE_MESSAGES = [
+      "Good job! 🌟",
+      "You're so smart! 💡",
+      "You're great at this! ✨",
+      "Let's get them all! 🚀",
+      "Wonderful! 🎈",
+      "Amazing! 🎉",
+      "That's right! 🙌"
+    ];
 
-  function shuffle(array) {
-    let arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
+    const ENCOURAGEMENT_MESSAGES = [
+      "You can get the next one! 💪",
+      "That's okay! 🌱",
+      "Don't worry! 😊",
+      "You can get this next time! 🎯",
+      "Mistakes make perfect! ✨"
+    ];
 
-  function login() {
-    const email = document.getElementById("input-email").value.trim();
-    if (!email) return alert("Please enter your email");
-    currentUser = email;
-    document.getElementById("user-display").innerText = email;
-    document.getElementById("view-login").classList.add("hidden");
-    document.getElementById("view-dashboard").classList.remove("hidden");
-    loadQuizzes();
-  }
+    let currentUser = "";
+    let currentRole = "";
+    let activeQuiz = null;
+    let activeQuestions = [];
+    let userAnswers = {};
+    let lockedQuestions = {};
 
-  function showDashboard() {
-    document.querySelectorAll(".container > div").forEach(d => d.classList.add("hidden"));
-    document.getElementById("view-dashboard").classList.remove("hidden");
-  }
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById("emailInput").value.trim().toLowerCase();
+      const loginBtn = document.getElementById("loginBtn");
 
-  async function loadQuizzes() {
-    const res = await fetch(`${API_URL}?action=getQuizIndex`);
-    const data = await res.json();
-    const grid = document.getElementById("quiz-grid");
-    grid.innerHTML = "";
+      if (!email) return;
 
-    data.forEach(q => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `<h4>${q.subject} - ${q.unit}</h4><p>${q.title}</p>`;
-      card.onclick = () => startQuiz(q);
-      grid.appendChild(card);
-    });
-  }
+      loginBtn.innerText = "Verifying email...";
+      loginBtn.disabled = true;
 
-  async function startQuiz(quiz) {
-    currentQuiz = quiz;
-    const res = await fetch(`${API_URL}?action=getQuiz&sheetId=${quiz.sheetId}`);
-    const rawQuestions = await res.json();
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=checkUserRole&email=${encodeURIComponent(email)}`);
+        const data = await res.json();
 
-    // 1. Shuffle & sample 30 questions
-    const sampled = shuffle(rawQuestions).slice(0, 30);
-
-    // 2. Shuffle options for each question
-    activeQuestions = sampled.map(q => {
-      const correctText = q.options.find(o => o.id === q.correctOption).text;
-      return {
-        ...q,
-        shuffledOptions: shuffle(q.options),
-        correctText: correctText
-      };
-    });
-
-    userAnswers = {};
-    lockedQuestions = {};
-
-    document.getElementById("quiz-title").innerText = `${quiz.subject} - ${quiz.title} (30 Questions)`;
-    renderQuiz();
-    document.querySelectorAll(".container > div").forEach(d => d.classList.add("hidden"));
-    document.getElementById("view-quiz").classList.remove("hidden");
-  }
-
-  function renderQuiz() {
-    const container = document.getElementById("questions-container");
-    container.innerHTML = "";
-
-    activeQuestions.forEach((q, idx) => {
-      const qDiv = document.createElement("div");
-      qDiv.className = "q-card";
-      qDiv.innerHTML = `<h3>Q${idx + 1}. ${q.question}</h3>`;
-
-      if (q.imageUrl) {
-        qDiv.innerHTML += `<img src="${q.imageUrl}" class="q-img" />`;
-      }
-
-      q.shuffledOptions.forEach(opt => {
-        const btn = document.createElement("button");
-        btn.className = "opt-btn";
-        btn.innerText = opt.text;
-
-        if (lockedQuestions[idx]) {
-          btn.disabled = true;
-          if (opt.text === q.correctText) btn.classList.add("correct");
-          if (userAnswers[idx] === opt.text && opt.text !== q.correctText) btn.classList.add("incorrect");
-        } else {
-          btn.onclick = () => selectAnswer(idx, opt.text);
+        if (data.role === "unauthorized") {
+          alert("Unauthorized: Email not found on Teachers or Students roster.");
+          loginBtn.innerText = "Authenticate & Enter Portal →";
+          loginBtn.disabled = false;
+          return;
         }
 
-        qDiv.appendChild(btn);
+        currentUser = email;
+        currentRole = data.role;
+
+        document.getElementById("loginModal").classList.add("hidden");
+        updateUserUI();
+
+        if (currentRole === "teacher") {
+          document.getElementById("teacherBanner").classList.remove("hidden");
+          document.getElementById("teacherTableContainer").classList.remove("hidden");
+          document.getElementById("studentStatsGrid").classList.add("hidden");
+          loadTeacherData();
+        } else {
+          document.getElementById("teacherBanner").classList.add("hidden");
+          document.getElementById("teacherTableContainer").classList.add("hidden");
+          document.getElementById("studentStatsGrid").classList.remove("hidden");
+          loadStudentStats();
+        }
+
+        loadQuizIndex();
+
+      } catch (err) {
+        alert("Error connecting to Google Apps Script backend.");
+        loginBtn.innerText = "Authenticate & Enter Portal →";
+        loginBtn.disabled = false;
+      }
+    }
+
+    function updateUserUI() {
+      const tag = document.getElementById("userProfileTag");
+      tag.innerHTML = `
+        <div class="text-right">
+          <div class="text-xs font-bold text-slate-800">${currentUser}</div>
+          <div class="text-[10px] font-semibold uppercase ${currentRole === 'teacher' ? 'text-amber-600' : 'text-emerald-600'}">${currentRole}</div>
+        </div>
+      `;
+    }
+
+    async function loadStudentStats() {
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
+        const data = await res.json();
+        const stat = data.find(s => s.email.toLowerCase() === currentUser);
+
+        if (stat) {
+          document.getElementById("statAvgScore").innerText = stat.bestScore + "%";
+          document.getElementById("statFirstTry").innerText = stat.firstTry100s;
+          document.getElementById("statAttempts").innerText = stat.attemptsCount;
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadTeacherData() {
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
+        const data = await res.json();
+        const tbody = document.getElementById("teacherTableBody");
+        tbody.innerHTML = "";
+
+        if (data.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='4' class='p-3 text-slate-400'>No student results recorded yet.</td></tr>";
+          return;
+        }
+
+        data.forEach(r => {
+          tbody.innerHTML += `
+            <tr class="border-b border-slate-100">
+              <td class="p-3 font-semibold text-slate-800">${r.email}</td>
+              <td class="p-3">${r.attemptsCount}</td>
+              <td class="p-3">🏅 ${r.firstTry100s}</td>
+              <td class="p-3 font-bold text-emerald-600">${r.bestScore}%</td>
+            </tr>
+          `;
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadQuizIndex() {
+      const grid = document.getElementById("quizCardsGrid");
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=getQuizIndex`);
+        const list = await res.json();
+        grid.innerHTML = "";
+
+        if (list.length === 0) {
+          grid.innerHTML = "<div class='text-xs text-slate-400'>No published quizzes found in Quiz_Index.</div>";
+          return;
+        }
+
+        list.forEach(q => {
+          grid.innerHTML += `
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 card-shadow flex flex-col justify-between">
+              <div>
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700">${q.subject}</span>
+                <h3 class="font-bold text-slate-900 text-base mt-2">${q.unit}</h3>
+                <p class="text-xs text-slate-500 mb-4">${q.title}</p>
+              </div>
+              <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.title}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
+                Start Unit Quiz &rarr;
+              </button>
+            </div>
+          `;
+        });
+      } catch (e) {
+        grid.innerHTML = "<div class='text-xs text-rose-500'>Error loading quiz index.</div>";
+      }
+    }
+
+    async function startQuiz(sheetId, subject, title, quizId) {
+      activeQuiz = { sheetId, subject, title, quizId };
+      userAnswers = {};
+      lockedQuestions = {};
+
+      document.getElementById("quizSubjectTag").innerText = subject;
+      document.getElementById("quizModalTitle").innerText = title;
+      document.getElementById("quizQuestionBody").innerHTML = "<div class='text-xs text-slate-400'>Loading questions...</div>";
+      document.getElementById("quizModal").classList.remove("hidden");
+
+      const res = await fetch(`${GAS_API_URL}?action=getQuiz&sheetId=${sheetId}`);
+      activeQuestions = await res.json();
+      renderQuizQuestions();
+    }
+
+    function renderQuizQuestions() {
+      const container = document.getElementById("quizQuestionBody");
+      container.innerHTML = "";
+
+      activeQuestions.forEach((q, idx) => {
+        const qCard = document.createElement("div");
+        qCard.className = "p-4 border border-slate-200 rounded-xl space-y-2 bg-slate-50";
+        qCard.innerHTML = `<h4 class="text-sm font-bold text-slate-900">Q${idx + 1}. ${q.question}</h4>`;
+
+        if (q.imageUrl) {
+          qCard.innerHTML += `<img src="${q.imageUrl}" class="max-w-full rounded-lg my-2" />`;
+        }
+
+        const optsContainer = document.createElement("div");
+        optsContainer.className = "space-y-1.5";
+
+        q.options.forEach(opt => {
+          const btn = document.createElement("button");
+          btn.className = "w-full text-left p-3 rounded-xl border text-xs font-medium transition-all bg-white border-slate-200 hover:border-emerald-500";
+          btn.innerText = `${opt.id}. ${opt.text}`;
+
+          if (lockedQuestions[idx]) {
+            btn.disabled = true;
+            if (opt.id === q.correctOption) {
+              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-emerald-100 border-emerald-300 text-emerald-900";
+            }
+            if (userAnswers[idx]?.selected === opt.id && opt.id !== q.correctOption) {
+              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-rose-100 border-rose-300 text-rose-900";
+            }
+          } else {
+            btn.onclick = () => chooseAnswer(idx, opt.id, q.correctOption);
+          }
+
+          optsContainer.appendChild(btn);
+        });
+
+        qCard.appendChild(optsContainer);
+
+        if (lockedQuestions[idx]) {
+          const isCorrect = userAnswers[idx].selected === q.correctOption;
+          const feedback = document.createElement("div");
+          feedback.className = `p-2.5 rounded-lg text-xs font-bold border mt-2 ${isCorrect ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-rose-100 text-rose-900 border-rose-300'}`;
+          feedback.innerText = userAnswers[idx].feedbackMsg;
+          qCard.appendChild(feedback);
+
+          if (q.explanation) {
+            const exp = document.createElement("div");
+            exp.className = "p-2.5 bg-slate-100 text-slate-700 text-xs rounded-lg border border-slate-200 mt-2";
+            exp.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
+            qCard.appendChild(exp);
+          }
+        }
+
+        container.appendChild(qCard);
+      });
+    }
+
+    function chooseAnswer(qIdx, selectedOptId, correctOptId) {
+      if (lockedQuestions[qIdx]) return;
+
+      const isCorrect = selectedOptId === correctOptId;
+      const msgList = isCorrect ? PRAISE_MESSAGES : ENCOURAGEMENT_MESSAGES;
+      const feedbackMsg = msgList[Math.floor(Math.random() * msgList.length)];
+
+      userAnswers[qIdx] = { selected: selectedOptId, feedbackMsg };
+      lockedQuestions[qIdx] = true;
+      renderQuizQuestions();
+    }
+
+    async function submitQuiz() {
+      let scoreCount = 0;
+      activeQuestions.forEach((q, idx) => {
+        if (userAnswers[idx]?.selected === q.correctOption) scoreCount++;
       });
 
-      if (lockedQuestions[idx]) {
-        qDiv.innerHTML += `<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div>`;
+      const percent = Math.round((scoreCount / activeQuestions.length) * 100);
+
+      alert(`Quiz Submitted!\nScore: ${percent}% (${scoreCount}/${activeQuestions.length} correct)`);
+
+      await fetch(GAS_API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "submitResult",
+          email: currentUser,
+          quizId: activeQuiz.quizId,
+          score: percent,
+          attemptNumber: 1,
+          isFirstTry100: percent === 100
+        })
+      });
+
+      closeQuizModal();
+      if (currentRole === "teacher") {
+        loadTeacherData();
+      } else {
+        loadStudentStats();
       }
+    }
 
-      container.appendChild(qDiv);
-    });
-  }
+    function closeQuizModal() {
+      document.getElementById("quizModal").classList.add("hidden");
+    }
 
-  function selectAnswer(qIdx, selectedText) {
-    if (lockedQuestions[qIdx]) return;
-    userAnswers[qIdx] = selectedText;
-    lockedQuestions[qIdx] = true;
-    renderQuiz(); // Re-render to lock choices & display explanation
-  }
-
-  async function submitQuiz() {
-    let scoreCount = 0;
-    activeQuestions.forEach((q, idx) => {
-      if (userAnswers[idx] === q.correctText) scoreCount++;
-    });
-
-    const percent = Math.round((scoreCount / activeQuestions.length) * 100);
-    const isFirstTry = attemptCount === 1;
-
-    alert(`Quiz Finished!\nYour Score: ${percent}% (${scoreCount}/${activeQuestions.length})`);
-
-    // Submit to Google Sheets API
-    await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "submitResult",
-        email: currentUser,
-        quizId: currentQuiz.quizId,
-        score: percent,
-        attemptNumber: attemptCount,
-        isFirstTry100: percent === 100 && isFirstTry
-      })
-    });
-
-    attemptCount++;
-    showDashboard();
-  }
-
-  async function showLeaderboard() {
-    const res = await fetch(`${API_URL}?action=getLeaderboard`);
-    const data = await res.json();
-    const tbody = document.getElementById("leaderboard-body");
-    tbody.innerHTML = "";
-
-    data.forEach(row => {
-      tbody.innerHTML += `<tr>
-        <td>${row.email}</td>
-        <td>${row.firstTry100s}</td>
-        <td>${row.bestScore}%</td>
-      </tr>`;
-    });
-
-    document.querySelectorAll(".container > div").forEach(d => d.classList.add("hidden"));
-    document.getElementById("view-leaderboard").classList.remove("hidden");
-  }
-</script>
-
+    window.onload = () => {
+      document.getElementById("loginModal").classList.remove("hidden");
+    };
+  </script>
 </body>
 </html>
