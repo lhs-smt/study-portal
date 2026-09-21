@@ -31,9 +31,13 @@
   <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-lg shadow-md shadow-emerald-500/20">
-          LH
-        </div>
+        <!-- SCHOOL LOGO -->
+        <img 
+          src="logo.png" 
+          alt="L. Hithadhoo School Logo" 
+          class="h-10 w-10 object-contain rounded-xl"
+          onerror="this.onerror=null; this.outerHTML='<div class=\'h-10 w-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm\'>LHS</div>';"
+        />
         <div>
           <div class="flex items-center gap-2">
             <span class="font-bold text-slate-900 text-base sm:text-lg tracking-tight">L. Hithadhoo School</span>
@@ -49,7 +53,7 @@
           <span>Google Apps Script Connected</span>
         </div>
         <div id="userProfileTag" class="flex items-center gap-2 pl-2 border-l border-slate-200">
-          <!-- Dynamically populated -->
+          <!-- Populated dynamically -->
         </div>
       </div>
     </div>
@@ -99,13 +103,13 @@
         <div class="flex items-center gap-3">
           <span class="h-9 w-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">SMT</span>
           <div>
-            <div class="text-xs font-bold text-amber-900">Teacher &amp; Faculty View Active</div>
+            <div class="text-xs font-bold text-amber-900">Faculty View Active</div>
             <div class="text-[11px] text-amber-700">Displaying aggregate student attempts and performance records</div>
           </div>
         </div>
       </div>
 
-      <!-- Stats Grid -->
+      <!-- Student Stats Grid -->
       <div id="studentStatsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
           <div class="text-slate-500 text-xs font-semibold mb-2">BEST RECORDED SCORE</div>
@@ -146,11 +150,9 @@
 
     <!-- QUIZ SELECTOR -->
     <section class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-xl font-bold text-slate-900">Available Practice Units</h2>
-          <p class="text-xs text-slate-500">Select any syllabus unit to take an interactive quiz</p>
-        </div>
+      <div>
+        <h2 class="text-xl font-bold text-slate-900">Available Practice Units</h2>
+        <p class="text-xs text-slate-500">Select any syllabus unit to take an interactive quiz</p>
       </div>
 
       <div id="quizCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -186,30 +188,16 @@
     L. Hithadhoo School Study Portal &copy; 2026
   </footer>
 
-  <!-- SCRIPT -->
+  <!-- JAVASCRIPT API ROUTER -->
   <script>
     const GAS_API_URL = "https://script.google.com/a/macros/lhithadhooschool.edu.mv/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec";
 
-    const PRAISE_MESSAGES = [
-      "Good job! 🌟",
-      "You're so smart! 💡",
-      "You're great at this! ✨",
-      "Let's get them all! 🚀",
-      "Wonderful! 🎈",
-      "Amazing! 🎉",
-      "That's right! 🙌"
-    ];
-
-    const ENCOURAGEMENT_MESSAGES = [
-      "You can get the next one! 💪",
-      "That's okay! 🌱",
-      "Don't worry! 😊",
-      "You can get this next time! 🎯",
-      "Mistakes make perfect! ✨"
-    ];
+    const PRAISE_MESSAGES = ["Good job! 🌟", "You're so smart! 💡", "You're great at this! ✨", "Let's get them all! 🚀", "Wonderful! 🎈", "Amazing! 🎉", "That's right! 🙌"];
+    const ENCOURAGEMENT_MESSAGES = ["You can get the next one! 💪", "That's okay! 🌱", "Don't worry! 😊", "You can get this next time! 🎯", "Mistakes make perfect! ✨"];
 
     let currentUser = "";
-    let currentRole = "";
+    let userRole = "";
+    let userTitle = "";
     let activeQuiz = null;
     let activeQuestions = [];
     let userAnswers = {};
@@ -226,7 +214,10 @@
       loginBtn.disabled = true;
 
       try {
-        const res = await fetch(`${GAS_API_URL}?action=checkUserRole&email=${encodeURIComponent(email)}`);
+        const res = await fetch(`${GAS_API_URL}?action=checkUserRole&email=${encodeURIComponent(email)}`, {
+          method: "GET",
+          redirect: "follow"
+        });
         const data = await res.json();
 
         if (data.role === "unauthorized") {
@@ -237,12 +228,13 @@
         }
 
         currentUser = email;
-        currentRole = data.role;
+        userRole = data.role;     // "teacher" or "student"
+        userTitle = data.title;   // Reads exact role column e.g., "Leading Teacher"
 
         document.getElementById("loginModal").classList.add("hidden");
         updateUserUI();
 
-        if (currentRole === "teacher") {
+        if (userRole === "teacher") {
           document.getElementById("teacherBanner").classList.remove("hidden");
           document.getElementById("teacherTableContainer").classList.remove("hidden");
           document.getElementById("studentStatsGrid").classList.add("hidden");
@@ -268,7 +260,7 @@
       tag.innerHTML = `
         <div class="text-right">
           <div class="text-xs font-bold text-slate-800">${currentUser}</div>
-          <div class="text-[10px] font-semibold uppercase ${currentRole === 'teacher' ? 'text-amber-600' : 'text-emerald-600'}">${currentRole}</div>
+          <div class="text-[10px] font-semibold uppercase ${userRole === 'teacher' ? 'text-amber-600' : 'text-emerald-600'}">${userTitle || userRole}</div>
         </div>
       `;
     }
@@ -294,7 +286,7 @@
         const tbody = document.getElementById("teacherTableBody");
         tbody.innerHTML = "";
 
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
           tbody.innerHTML = "<tr><td colspan='4' class='p-3 text-slate-400'>No student results recorded yet.</td></tr>";
           return;
         }
@@ -319,7 +311,7 @@
         const list = await res.json();
         grid.innerHTML = "";
 
-        if (list.length === 0) {
+        if (!list || list.length === 0) {
           grid.innerHTML = "<div class='text-xs text-slate-400'>No published quizzes found in Quiz_Index.</div>";
           return;
         }
@@ -450,7 +442,7 @@
       });
 
       closeQuizModal();
-      if (currentRole === "teacher") {
+      if (userRole === "teacher") {
         loadTeacherData();
       } else {
         loadStudentStats();
