@@ -444,13 +444,28 @@
       const idx = currentQuestionIndex;
       const q = activeQuestions[idx];
 
+      // Real-time calculation of correct answers
+      let correctAnswersCount = 0;
+      Object.keys(lockedQuestions).forEach(qKey => {
+        if (userAnswers[qKey]?.selected === activeQuestions[qKey].correctOption) {
+          correctAnswersCount++;
+        }
+      });
+      const progressPercent = Math.round((correctAnswersCount / activeQuestions.length) * 100);
+
       const qCard = document.createElement("div");
       qCard.className = "p-4 border border-slate-800 rounded-xl space-y-2 bg-slate-950 relative";
       
       const qHeader = document.createElement("div");
-      qHeader.className = "flex justify-between items-center mb-1";
+      qHeader.className = "flex flex-col gap-2 mb-2";
       qHeader.innerHTML = `
-        <span class="text-[11px] font-bold text-emerald-400">Question ${idx + 1} of ${activeQuestions.length}</span>
+        <div class="flex justify-between items-center text-[11px] font-bold">
+          <span class="text-emerald-400">Question ${idx + 1} of ${activeQuestions.length}</span>
+          <span class="text-slate-400">Score Progress: ${correctAnswersCount}/${activeQuestions.length} (${progressPercent}%)</span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+          <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${progressPercent}%"></div>
+        </div>
       `;
       qCard.appendChild(qHeader);
 
