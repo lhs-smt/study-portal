@@ -214,9 +214,14 @@
 
     <!-- QUIZ SELECTOR -->
     <section class="space-y-4">
-      <div>
-        <h2 class="text-xl font-bold text-white">Let's Practice!</h2>
-        <p class="text-xs text-slate-400">Select any syllabus unit to take an interactive quiz</p>
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-white">Let's Practice!</h2>
+          <p class="text-xs text-slate-400">Select any syllabus unit to take an interactive quiz</p>
+        </div>
+        <button onclick="refreshUnits()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl border border-slate-700 transition-all cursor-pointer flex items-center gap-1.5">
+          🔄 Refresh Quizzes
+        </button>
       </div>
 
       <div id="quizCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -342,28 +347,41 @@
           commonName = "Student";
         }
 
-        document.getElementById("loginModal").classList.add("hidden");
-        updateUserUI();
+        // PERSIST USER SESSION TO LOCALSTORAGE
+        localStorage.setItem("lhs_user_session", JSON.stringify({
+          email: currentUser,
+          role: userRole,
+          title: userTitle,
+          name: userName,
+          commonName: commonName
+        }));
 
-        if (userRole === "teacher") {
-          document.getElementById("teacherBanner").classList.remove("hidden");
-          document.getElementById("teacherTableContainer").classList.remove("hidden");
-          document.getElementById("studentStatsGrid").classList.add("hidden");
-          loadTeacherData();
-        } else {
-          document.getElementById("teacherBanner").classList.add("hidden");
-          document.getElementById("teacherTableContainer").classList.add("hidden");
-          document.getElementById("studentStatsGrid").classList.remove("hidden");
-          loadStudentStats();
-        }
-
-        loadQuizIndex();
+        initPortalSession();
 
       } catch (err) {
         alert("Error connecting to Google Apps Script backend.");
         loginBtn.innerText = "Authenticate & Enter Portal →";
         loginBtn.disabled = false;
       }
+    }
+
+    function initPortalSession() {
+      document.getElementById("loginModal").classList.add("hidden");
+      updateUserUI();
+
+      if (userRole === "teacher") {
+        document.getElementById("teacherBanner").classList.remove("hidden");
+        document.getElementById("teacherTableContainer").classList.remove("hidden");
+        document.getElementById("studentStatsGrid").classList.add("hidden");
+        loadTeacherData();
+      } else {
+        document.getElementById("teacherBanner").classList.add("hidden");
+        document.getElementById("teacherTableContainer").classList.add("hidden");
+        document.getElementById("studentStatsGrid").classList.remove("hidden");
+        loadStudentStats();
+      }
+
+      loadQuizIndex();
     }
 
     function updateUserUI() {
@@ -373,12 +391,20 @@
           <div class="text-xs font-bold text-white">${userName || currentUser}</div>
           <div class="text-[10px] font-semibold uppercase ${userRole === 'teacher' ? 'text-amber-400' : 'text-emerald-400'}">${userTitle || userRole}</div>
         </div>
+        <button onclick="logoutUser()" class="ml-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[11px] font-medium rounded-lg border border-slate-700 transition-all cursor-pointer">
+          Logout
+        </button>
       `;
 
       // Render Common Name in Welcome Board
       document.getElementById("welcomeTitle").innerText = `Welcome ${commonName}!`;
       const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
       document.getElementById("motivationalQuote").innerText = randomQuote;
+    }
+
+    function logoutUser() {
+      localStorage.removeItem("lhs_user_session");
+      location.reload();
     }
 
     async function loadStudentStats() {
@@ -418,6 +444,12 @@
           `;
         });
       } catch (e) { console.error(e); }
+    }
+
+    async function refreshUnits() {
+      const grid = document.getElementById("quizCardsGrid");
+      grid.innerHTML = "<div class='text-xs text-slate-500'>Refreshing units list...</div>";
+      await loadQuizIndex();
     }
 
     async function loadQuizIndex() {
@@ -663,6 +695,21 @@
     }
 
     window.onload = () => {
+      const savedSession = localStorage.getItem("lhs_user_session");
+      if (savedSession) {
+        try {
+          const user = JSON.parse(savedSession);
+          currentUser = user.email;
+          userRole = user.role;
+          userTitle = user.title;
+          userName = user.name;
+          commonName = user.commonName;
+          initPortalSession();
+          return;
+        } catch (e) {
+          localStorage.removeItem("lhs_user_session");
+        }
+      }
       document.getElementById("loginModal").classList.remove("hidden");
     };
   </script>
