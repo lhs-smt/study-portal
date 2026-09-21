@@ -24,6 +24,21 @@
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5); }
     .card-shadow:hover { box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.15); }
+
+    /* Raise & Float-In Animation for Feedback Messages */
+    @keyframes floatInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-float-in {
+      animation: floatInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col">
@@ -189,10 +204,7 @@
         <!-- Questions -->
       </div>
 
-      <div class="px-5 py-3 border-t border-slate-800 bg-slate-950 flex justify-between items-center">
-        <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl transition-all cursor-pointer">
-          &larr; Previous
-        </button>
+      <div class="px-5 py-3 border-t border-slate-800 bg-slate-950 flex justify-end items-center">
         <button id="nextBtn" onclick="nextQuestion()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer">
           Next Question &rarr;
         </button>
@@ -433,13 +445,13 @@
       if (lockedQuestions[idx]) {
         const isCorrect = userAnswers[idx].selected === q.correctOption;
         const feedback = document.createElement("div");
-        feedback.className = `p-2.5 rounded-lg text-xs font-bold border mt-2 ${isCorrect ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : 'bg-rose-950/60 text-rose-300 border-rose-800'}`;
+        feedback.className = `p-2.5 rounded-lg text-xs font-bold border mt-2 animate-float-in ${isCorrect ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : 'bg-rose-950/60 text-rose-300 border-rose-800'}`;
         feedback.innerText = userAnswers[idx].feedbackMsg;
         qCard.appendChild(feedback);
 
         if (q.explanation) {
           const exp = document.createElement("div");
-          exp.className = "p-2.5 bg-slate-900 text-slate-300 text-xs rounded-lg border border-slate-800 mt-2";
+          exp.className = "p-2.5 bg-slate-900 text-slate-300 text-xs rounded-lg border border-slate-800 mt-2 animate-float-in";
           exp.innerHTML = `<strong class="text-emerald-400">Explanation:</strong> ${q.explanation}`;
           qCard.appendChild(exp);
         }
@@ -448,15 +460,8 @@
       container.appendChild(qCard);
 
       // Update Navigation Buttons
-      const prevBtn = document.getElementById("prevBtn");
       const nextBtn = document.getElementById("nextBtn");
       const submitBtn = document.getElementById("submitBtn");
-
-      if (idx === 0) {
-        prevBtn.classList.add("opacity-50", "pointer-events-none");
-      } else {
-        prevBtn.classList.remove("opacity-50", "pointer-events-none");
-      }
 
       if (idx === activeQuestions.length - 1) {
         nextBtn.classList.add("hidden");
@@ -470,13 +475,6 @@
     function nextQuestion() {
       if (currentQuestionIndex < activeQuestions.length - 1) {
         currentQuestionIndex++;
-        renderQuizQuestions();
-      }
-    }
-
-    function prevQuestion() {
-      if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
         renderQuizQuestions();
       }
     }
