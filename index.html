@@ -31,7 +31,7 @@
   <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <!-- SCHOOL LOGO RESTORED -->
+        <!-- SCHOOL LOGO -->
         <img 
           src="logo.png" 
           alt="L. Hithadhoo School Logo" 
@@ -59,7 +59,7 @@
     </div>
   </header>
 
-  <!-- LOGIN MODAL / OVERLAY WITH REQUIRED PASSWORD -->
+  <!-- LOGIN MODAL -->
   <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
     <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
       <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white text-center">
@@ -104,12 +104,12 @@
     </div>
   </div>
 
-  <!-- MAIN STUDY PORTAL CONTENT -->
+  <!-- MAIN CONTENT -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-8">
 
     <!-- DASHBOARD -->
     <section id="dashboardSection" class="space-y-5">
-      <!-- Teacher View Banner -->
+      <!-- Teacher Banner -->
       <div id="teacherBanner" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="h-9 w-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">SMT</span>
@@ -120,7 +120,7 @@
         </div>
       </div>
 
-      <!-- Student Stats Grid -->
+      <!-- Student Stats -->
       <div id="studentStatsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
           <div class="text-slate-500 text-xs font-semibold mb-2">BEST RECORDED SCORE</div>
@@ -138,7 +138,7 @@
         </div>
       </div>
 
-      <!-- Teacher View Table -->
+      <!-- Teacher Table -->
       <div id="teacherTableContainer" class="hidden bg-white rounded-2xl border border-slate-200 p-5 card-shadow">
         <h3 class="text-base font-bold text-slate-900 mb-3">Student Performance Overview</h3>
         <div class="overflow-x-auto">
@@ -172,7 +172,7 @@
     </section>
   </main>
 
-  <!-- INTERACTIVE QUIZ MODAL -->
+  <!-- QUIZ MODAL -->
   <div id="quizModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
     <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
       <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -184,7 +184,7 @@
       </div>
 
       <div id="quizQuestionBody" class="p-6 overflow-y-auto space-y-4 flex-1">
-        <!-- Questions rendered dynamically -->
+        <!-- Questions -->
       </div>
 
       <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 flex justify-end">
@@ -199,8 +199,8 @@
     L. Hithadhoo School - Studyspace &copy; 2026
   </footer>
 
-  <!-- JAVASCRIPT API ROUTER -->
   <script>
+    // UPDATED WEB APP URL
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec";
 
     const PRAISE_MESSAGES = ["Good job! 🌟", "You're so smart! 💡", "You're great at this! ✨", "Let's get them all! 🚀", "Wonderful! 🎈", "Amazing! 🎉", "That's right! 🙌"];
@@ -244,9 +244,9 @@
         }
 
         currentUser = email;
-        userRole = data.role;     // "teacher" or "student"
-        userTitle = data.title;   // Role / Title from sheet
-        userName = data.name;     // Name from sheet
+        userRole = data.role;     
+        userTitle = data.title;   
+        userName = data.name;     
 
         document.getElementById("loginModal").classList.add("hidden");
         updateUserUI();
