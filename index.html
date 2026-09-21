@@ -149,6 +149,17 @@
   <!-- MAIN CONTENT -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-8">
 
+    <!-- WELCOME BOARD -->
+    <div id="welcomeBoard" class="bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-900 p-6 rounded-2xl border border-emerald-800/40 card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h2 id="welcomeTitle" class="text-2xl font-extrabold text-white tracking-tight">Welcome!</h2>
+        <p id="motivationalQuote" class="text-xs font-medium text-emerald-400/90 mt-1 italic">"Success is the sum of small efforts, repeated day in and day out."</p>
+      </div>
+      <div class="px-3 py-1.5 rounded-xl bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 text-xs font-bold w-max">
+        🚀 Keep practicing &amp; reach your goals!
+      </div>
+    </div>
+
     <!-- DASHBOARD -->
     <section id="dashboardSection" class="space-y-5">
       <!-- School Banner -->
@@ -204,7 +215,7 @@
     <!-- QUIZ SELECTOR -->
     <section class="space-y-4">
       <div>
-        <h2 class="text-xl font-bold text-white">Available Practice Units</h2>
+        <h2 class="text-xl font-bold text-white">Let's Practice!</h2>
         <p class="text-xs text-slate-400">Select any syllabus unit to take an interactive quiz</p>
       </div>
 
@@ -250,10 +261,19 @@
     const PRAISE_MESSAGES = ["Good job! 🌟", "You're so smart! 💡", "You're great at this! ✨", "Let's get them all! 🚀", "Wonderful! 🎈", "Amazing! 🎉", "That's right! 🙌"];
     const ENCOURAGEMENT_MESSAGES = ["You can get the next one! 💪", "That's okay! 🌱", "Don't worry! 😊", "You can get this next time! 🎯", "Mistakes make perfect! ✨"];
 
+    const MOTIVATIONAL_QUOTES = [
+      `"Success is the sum of small efforts, repeated day in and day out."`,
+      `"Believe you can and you're halfway there."`,
+      `"Don't watch the clock; do what it does. Keep going."`,
+      `"The expert in anything was once a beginner."`,
+      `"Strive for progress, not perfection."`
+    ];
+
     let currentUser = "";
     let userRole = "";
     let userTitle = "";
     let userName = "";
+    let commonName = "";
     let activeQuiz = null;
     let activeQuestions = [];
     let userAnswers = {};
@@ -310,7 +330,8 @@
         currentUser = email;
         userRole = data.role;     
         userTitle = data.title;   
-        userName = data.name;     
+        userName = data.name || data.commonName || "";     
+        commonName = data.commonName || (data.name ? data.name.split(" ")[0] : "Student");
 
         document.getElementById("loginModal").classList.add("hidden");
         updateUserUI();
@@ -344,6 +365,11 @@
           <div class="text-[10px] font-semibold uppercase ${userRole === 'teacher' ? 'text-amber-400' : 'text-emerald-400'}">${userTitle || userRole}</div>
         </div>
       `;
+
+      // Update Welcome Board with Column D Common Name
+      document.getElementById("welcomeTitle").innerText = `Welcome ${commonName}!`;
+      const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
+      document.getElementById("motivationalQuote").innerText = randomQuote;
     }
 
     async function loadStudentStats() {
@@ -409,8 +435,8 @@
                 <!-- Unit Card Progress Bar -->
                 <div class="mb-4">
                   <div class="flex justify-between items-center text-[11px] font-semibold text-slate-400 mb-1">
-                    <span>${prog.answered > 0 ? 'Attempt Progress' : 'Unattempted'}</span>
-                    <span class="text-emerald-400">${prog.percent}% (${prog.answered}/${prog.total})</span>
+                    <span>Progress</span>
+                    <span class="text-emerald-400">${prog.percent}%</span>
                   </div>
                   <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
                     <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${prog.percent}%"></div>
