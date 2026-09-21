@@ -39,8 +39,8 @@
         </div>
       </div>
       <div id="user-profile" class="text-right">
-        <div id="user-name" class="text-sm font-semibold text-slate-200">--</div>
-        <div id="user-role" class="text-xs font-bold text-emerald-400 uppercase tracking-wider">--</div>
+        <div id="user-name" class="text-sm font-semibold text-slate-200">Ahmed Eelaaf Mohamed</div>
+        <div id="user-role" class="text-xs font-bold text-emerald-400 uppercase tracking-wider">STUDENT</div>
       </div>
     </div>
   </header>
@@ -51,15 +51,15 @@
     <!-- Overall Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
-        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Best Recorded Score</div>
+        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">BEST RECORDED SCORE</div>
         <div id="stat-best-score" class="text-3xl font-extrabold text-emerald-400">0%</div>
       </div>
       <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
-        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">First-Try 100s</div>
+        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">FIRST-TRY 100s</div>
         <div id="stat-first-try" class="text-3xl font-extrabold text-slate-100">0</div>
       </div>
       <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
-        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Total Attempts Logged</div>
+        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">TOTAL ATTEMPTS LOGGED</div>
         <div id="stat-attempts" class="text-3xl font-extrabold text-slate-100">0</div>
       </div>
     </div>
@@ -86,15 +86,15 @@
       <!-- Modal Header -->
       <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
         <div>
-          <span id="modal-subject" class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">--</span>
-          <h3 id="modal-title" class="text-base font-bold text-slate-100">--</h3>
+          <span id="modal-subject" class="text-xs font-semibold px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded-full inline-block mb-1 border border-emerald-800/40">--</span>
+          <h3 id="modal-title" class="text-base font-bold text-slate-100 mt-1">--</h3>
         </div>
         <button onclick="closeQuizModal()" class="text-slate-400 hover:text-slate-200 text-xl font-bold px-2">
           &times;
         </button>
       </div>
 
-      <!-- Modal Body / Question Render Box -->
+      <!-- Modal Body / Single Question Box -->
       <div id="quiz-container" class="p-6 overflow-y-auto flex-grow">
         <div class="text-center py-8 text-slate-400 text-sm">Loading question dataset...</div>
       </div>
@@ -109,24 +109,21 @@
 
   <!-- Application Logic -->
   <script>
-    // Config API URL
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec"; 
 
-    // Global State
     let loadedUnits = [];
     let currentQuizQuestions = [];
     let currentQuestionIndex = 0;
     let studentAnswers = {};
     let activeQuizId = "";
     let activeSheetId = "";
-    let currentUserEmail = "student@lhithadhooschool.edu.mv"; // Updated automatically upon auth
+    let currentUserEmail = "student@lhithadhooschool.edu.mv";
 
     document.addEventListener("DOMContentLoaded", () => {
       fetchQuizIndex();
       fetchLeaderboard();
     });
 
-    // Fetch Index from GAS Backend
     async function fetchQuizIndex() {
       try {
         const res = await fetch(`${GAS_API_URL}?action=getQuizIndex`);
@@ -148,7 +145,6 @@
       }
     }
 
-    // Fetch Overall Leaderboard / Stats
     async function fetchLeaderboard() {
       try {
         const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
@@ -166,7 +162,6 @@
       }
     }
 
-    // Render Unit Cards with Completion Progress Bar
     function renderUnitSelectionCards() {
       const container = document.getElementById("quiz-units-grid");
       if (!container) return;
@@ -186,7 +181,7 @@
                 ${unit.subject}
               </span>
               <h3 class="text-lg font-bold text-slate-100 mb-1">${unit.title}</h3>
-              <p class="text-xs text-slate-400 mb-4">${unit.unit}</p>
+              <p class="text-xs text-slate-400 mb-4">Unit ${unit.unit}</p>
             </div>
 
             <div>
@@ -211,7 +206,6 @@
       }).join('');
     }
 
-    // Start Quiz Workflow
     async function startQuiz(sheetId, quizId, subject, title) {
       activeQuizId = quizId;
       activeSheetId = sheetId;
@@ -221,7 +215,6 @@
       document.getElementById("quiz-modal").classList.remove("hidden");
       document.getElementById("quiz-container").innerHTML = `<div class="text-center py-12 text-slate-400 text-sm">Loading questions...</div>`;
 
-      // Retrieve locally saved progress state
       const savedProgress = getQuizProgress(quizId);
       studentAnswers = savedProgress.answers || {};
 
@@ -241,7 +234,6 @@
       }
     }
 
-    // Render One Question at a Time
     function renderCurrentQuestion() {
       const container = document.getElementById("quiz-container");
       if (!container || currentQuizQuestions.length === 0) return;
@@ -300,12 +292,11 @@
       container.innerHTML = html;
     }
 
-    // Select Option & Persist Progress Immediately
     function selectOption(optionId) {
       studentAnswers[currentQuestionIndex] = optionId;
       saveProgress();
       renderCurrentQuestion();
-      renderUnitSelectionCards(); // Instantly update background card progress bars
+      renderUnitSelectionCards();
     }
 
     function nextQuestion() {
@@ -322,7 +313,6 @@
       }
     }
 
-    // Progress Persist Engine
     function saveProgress() {
       if (!activeQuizId) return;
       const attemptedCount = Object.keys(studentAnswers).length;
@@ -344,7 +334,6 @@
       return data ? JSON.parse(data) : { attempted: 0, total: 0, percent: 0, answers: {} };
     }
 
-    // Submit Quiz & Log Results to Master Database
     async function submitQuiz() {
       let correctCount = 0;
       currentQuizQuestions.forEach((q, idx) => {
