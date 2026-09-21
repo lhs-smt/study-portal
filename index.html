@@ -41,18 +41,13 @@
         <div>
           <div class="flex items-center gap-2">
             <span class="font-bold text-slate-900 text-lg sm:text-xl tracking-tight">L. Hithadhoo School</span>
-            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">Study Portal</span>
           </div>
           <p class="text-[11px] font-medium text-slate-500 hidden sm:block">Studyspace</p>
         </div>
       </div>
 
       <div id="navUserSection" class="flex items-center gap-3">
-        <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800">
-          <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Google Apps Script Connected</span>
-        </div>
-        <div id="userProfileTag" class="flex items-center gap-2 pl-2 border-l border-slate-200">
+        <div id="userProfileTag" class="flex items-center gap-2">
           <!-- Populated dynamically -->
         </div>
       </div>
@@ -63,8 +58,14 @@
   <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
     <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
       <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white text-center">
-        <div class="inline-flex h-12 w-12 rounded-xl bg-white/20 items-center justify-center text-xl font-bold mb-2">
-          🎓
+        <!-- SCHOOL LOGO ON LOGIN MODAL -->
+        <div class="inline-flex h-14 w-14 rounded-2xl bg-white/90 p-2 items-center justify-center mb-3 shadow-md">
+          <img 
+            src="logo.png" 
+            alt="L. Hithadhoo School Logo" 
+            class="h-full w-full object-contain"
+            onerror="this.onerror=null; this.outerHTML='<span class=\'text-2xl\'>🎓</span>';"
+          />
         </div>
         <h2 class="text-2xl font-extrabold tracking-tight">L. Hithadhoo School</h2>
         <p class="text-xs font-medium text-emerald-100 mt-1">Studyspace</p>
@@ -109,12 +110,12 @@
 
     <!-- DASHBOARD -->
     <section id="dashboardSection" class="space-y-5">
-      <!-- Teacher Banner -->
+      <!-- School Banner (Replaced Faculty View with School View) -->
       <div id="teacherBanner" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="h-9 w-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">SMT</span>
           <div>
-            <div class="text-xs font-bold text-amber-900">Faculty View Active</div>
+            <div class="text-xs font-bold text-amber-900">School View Active</div>
             <div class="text-[11px] text-amber-700">Displaying aggregate student attempts and performance records</div>
           </div>
         </div>
@@ -200,7 +201,6 @@
   </footer>
 
   <script>
-    // UPDATED WEB APP URL
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec";
 
     const PRAISE_MESSAGES = ["Good job! 🌟", "You're so smart! 💡", "You're great at this! ✨", "Let's get them all! 🚀", "Wonderful! 🎈", "Amazing! 🎉", "That's right! 🙌"];
