@@ -280,7 +280,6 @@
     let lockedQuestions = {};
     let currentQuestionIndex = 0;
 
-    // Helper function to shuffle an array in-place
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -330,8 +329,18 @@
         currentUser = email;
         userRole = data.role;     
         userTitle = data.title;   
-        userName = data.name || data.commonName || "";     
-        commonName = data.commonName || (data.name ? data.name.split(" ")[0] : "Student");
+        userName = data.name || "";     
+
+        // Strictly capture Column D (commonName)
+        if (data.commonName) {
+          commonName = data.commonName;
+        } else if (data.name) {
+          // Fallback parsing if backend hasn't re-deployed yet
+          const nameParts = data.name.trim().split(" ");
+          commonName = nameParts.length > 1 ? nameParts[1] : nameParts[0];
+        } else {
+          commonName = "Student";
+        }
 
         document.getElementById("loginModal").classList.add("hidden");
         updateUserUI();
@@ -366,7 +375,7 @@
         </div>
       `;
 
-      // Update Welcome Board with Column D Common Name
+      // Render Common Name in Welcome Board
       document.getElementById("welcomeTitle").innerText = `Welcome ${commonName}!`;
       const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
       document.getElementById("motivationalQuote").innerText = randomQuote;
@@ -469,7 +478,6 @@
       const res = await fetch(`${GAS_API_URL}?action=getQuiz&sheetId=${sheetId}`);
       const fetchedQuestions = await res.json();
       
-      // Shuffle questions and limit to 30 questions
       if (Array.isArray(fetchedQuestions)) {
         const shuffled = shuffleArray(fetchedQuestions).map(q => {
           if (q.options && Array.isArray(q.options)) {
@@ -494,7 +502,6 @@
       const idx = currentQuestionIndex;
       const q = activeQuestions[idx];
 
-      // Real-time calculation of correct answers
       let correctAnswersCount = 0;
       Object.keys(lockedQuestions).forEach(qKey => {
         if (userAnswers[qKey]?.selected === activeQuestions[qKey].correctOption) {
@@ -555,7 +562,6 @@
       qCard.appendChild(optsContainer);
 
       if (lockedQuestions[idx]) {
-        // Independent flying popup for praise & encouragement (Unified Green Layout)
         const feedback = document.createElement("div");
         feedback.className = "absolute left-1/2 bottom-12 z-20 pointer-events-none transform -translate-x-1/2 px-4 py-2 bg-emerald-950/95 border border-emerald-500 text-emerald-200 text-xs font-extrabold rounded-full shadow-2xl backdrop-blur-md animate-fly-popup flex items-center gap-1.5 whitespace-nowrap";
         feedback.innerText = userAnswers[idx].feedbackMsg;
@@ -571,7 +577,6 @@
 
       container.appendChild(qCard);
 
-      // Update Navigation Buttons (Disabled until current question is answered)
       const nextBtn = document.getElementById("nextBtn");
       const submitBtn = document.getElementById("submitBtn");
       const isAnswered = !!lockedQuestions[idx];
@@ -614,12 +619,11 @@
       userAnswers[qIdx] = { selected: selectedOptId, feedbackMsg };
       lockedQuestions[qIdx] = true;
 
-      // Persist individual progress locally to update Unit Cards
       const answeredCount = Object.keys(lockedQuestions).length;
       saveUnitProgress(activeQuiz.quizId, answeredCount, activeQuestions.length);
 
       renderQuizQuestions();
-      loadQuizIndex(); // Instantly update practice unit progress bars
+      loadQuizIndex();
     }
 
     async function submitQuiz() {
