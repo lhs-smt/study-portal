@@ -25,7 +25,30 @@
     .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5); }
     .card-shadow:hover { box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.15); }
 
-    /* Raise & Float-In Animation for Feedback Messages */
+    /* Animation: Float in up, pause, then float up & fade out */
+    @keyframes floatAndDisappear {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      15% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      80% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-12px);
+        display: none;
+      }
+    }
+    .animate-float-disappear {
+      animation: floatAndDisappear 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
     @keyframes floatInUp {
       0% {
         opacity: 0;
@@ -445,7 +468,7 @@
       if (lockedQuestions[idx]) {
         const isCorrect = userAnswers[idx].selected === q.correctOption;
         const feedback = document.createElement("div");
-        feedback.className = `p-2.5 rounded-lg text-xs font-bold border mt-2 animate-float-in ${isCorrect ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : 'bg-rose-950/60 text-rose-300 border-rose-800'}`;
+        feedback.className = `p-2.5 rounded-lg text-xs font-bold border mt-2 animate-float-disappear ${isCorrect ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : 'bg-rose-950/60 text-rose-300 border-rose-800'}`;
         feedback.innerText = userAnswers[idx].feedbackMsg;
         qCard.appendChild(feedback);
 
