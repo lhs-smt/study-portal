@@ -1,382 +1,480 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>L. Hithadhoo School - Studyspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            brand: {
-              bg: '#0b0f17',
-              card: '#111827',
-              border: '#1f2937',
-              accent: '#10b981',
-              accentHover: '#059669'
-            }
-          }
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
         }
       }
     }
   </script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5); }
+    .card-shadow:hover { box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.15); }
+  </style>
 </head>
-<body class="bg-[#0b0f17] text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col">
 
-  <!-- Header -->
-  <header class="border-b border-slate-800 bg-[#0b0f17]/80 backdrop-blur sticky top-0 z-40">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+  <!-- TOP NAVBAR -->
+  <header class="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-emerald-950 border border-emerald-500/30 flex items-center justify-center font-bold text-emerald-400">
-          LHS
-        </div>
+        <!-- SCHOOL LOGO -->
+        <img 
+          src="logo.png" 
+          alt="L. Hithadhoo School Logo" 
+          class="h-10 w-10 object-contain rounded-xl bg-slate-800 border border-slate-700 p-0.5"
+          onerror="this.onerror=null; this.outerHTML='<div class=\'h-10 w-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm\'>LHS</div>';"
+        />
         <div>
-          <h1 class="text-base font-bold tracking-wide text-slate-100">L. Hithadhoo School</h1>
-          <p class="text-xs text-emerald-500 font-medium tracking-wider uppercase">Studyspace</p>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-white text-lg sm:text-xl tracking-tight">L. Hithadhoo School</span>
+          </div>
+          <p class="text-[11px] font-medium text-emerald-400 hidden sm:block">Studyspace</p>
         </div>
       </div>
-      <div id="user-profile" class="text-right">
-        <div id="user-name" class="text-sm font-semibold text-slate-200">Ahmed Eelaaf Mohamed</div>
-        <div id="user-role" class="text-xs font-bold text-emerald-400 uppercase tracking-wider">STUDENT</div>
+
+      <div id="navUserSection" class="flex items-center gap-3">
+        <div id="userProfileTag" class="flex items-center gap-2">
+          <!-- Populated dynamically -->
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
-
-    <!-- Overall Stats Row -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
-        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">BEST RECORDED SCORE</div>
-        <div id="stat-best-score" class="text-3xl font-extrabold text-emerald-400">0%</div>
-      </div>
-      <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
-        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">FIRST-TRY 100s</div>
-        <div id="stat-first-try" class="text-3xl font-extrabold text-slate-100">0</div>
-      </div>
-      <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
-        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">TOTAL ATTEMPTS LOGGED</div>
-        <div id="stat-attempts" class="text-3xl font-extrabold text-slate-100">0</div>
-      </div>
-    </div>
-
-    <!-- Available Practice Units Header -->
-    <div class="mb-6">
-      <h2 class="text-xl font-bold text-slate-100">Available Practice Units</h2>
-      <p class="text-sm text-slate-400">Select any syllabus unit to take an interactive quiz</p>
-    </div>
-
-    <!-- Units Grid -->
-    <div id="quiz-units-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <div class="col-span-full py-8 text-center text-slate-500 text-sm">
-        Loading syllabus practice units...
-      </div>
-    </div>
-
-  </main>
-
-  <!-- Quiz Modal -->
-  <div id="quiz-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-      
-      <!-- Modal Header -->
-      <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
-        <div>
-          <span id="modal-subject" class="text-xs font-semibold px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded-full inline-block mb-1 border border-emerald-800/40">--</span>
-          <h3 id="modal-title" class="text-base font-bold text-slate-100 mt-1">--</h3>
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-700 to-teal-800 p-6 text-white text-center border-b border-emerald-600/30">
+        <!-- SCHOOL LOGO ON LOGIN MODAL -->
+        <div class="inline-flex h-14 w-14 rounded-2xl bg-white p-2 items-center justify-center mb-3 shadow-lg">
+          <img 
+            src="logo.png" 
+            alt="L. Hithadhoo School Logo" 
+            class="h-full w-full object-contain"
+            onerror="this.onerror=null; this.outerHTML='<span class=\'text-2xl\'>🎓</span>';"
+          />
         </div>
-        <button onclick="closeQuizModal()" class="text-slate-400 hover:text-slate-200 text-xl font-bold px-2">
-          &times;
+        <h2 class="text-2xl font-extrabold tracking-tight text-white">L. Hithadhoo School</h2>
+        <p class="text-xs font-semibold text-emerald-200 mt-1">Studyspace</p>
+      </div>
+
+      <form id="loginForm" class="p-6 space-y-4" onsubmit="handleLoginSubmit(event)">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">School Email Address</label>
+          <input 
+            type="email" 
+            id="emailInput" 
+            required 
+            placeholder="name@lhithadhooschool.edu.mv"
+            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Account Password</label>
+          <input 
+            type="password" 
+            id="passwordInput" 
+            required 
+            placeholder="••••••••"
+            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          id="loginBtn"
+          class="w-full py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-emerald-400 hover:bg-emerald-300 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+        >
+          Authenticate &amp; Enter Portal &rarr;
         </button>
-      </div>
-
-      <!-- Modal Body / Single Question Box -->
-      <div id="quiz-container" class="p-6 overflow-y-auto flex-grow">
-        <div class="text-center py-8 text-slate-400 text-sm">Loading question dataset...</div>
-      </div>
-
+      </form>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="border-t border-slate-800/60 py-4 text-center text-xs text-slate-500">
+  <!-- MAIN CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-8">
+
+    <!-- DASHBOARD -->
+    <section id="dashboardSection" class="space-y-5">
+      <!-- School Banner -->
+      <div id="teacherBanner" class="hidden p-4 rounded-2xl bg-amber-950/40 border border-amber-600/50 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="h-9 w-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-extrabold text-sm">SMT</span>
+          <div>
+            <div class="text-xs font-bold text-amber-300">School View Active</div>
+            <div class="text-[11px] text-amber-200/80">Displaying aggregate student attempts and performance records</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Stats -->
+      <div id="studentStatsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
+          <div class="text-slate-400 text-xs font-bold mb-2">BEST RECORDED SCORE</div>
+          <div id="statAvgScore" class="text-3xl font-extrabold text-emerald-400">0%</div>
+        </div>
+
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
+          <div class="text-slate-400 text-xs font-bold mb-2">FIRST-TRY 100s</div>
+          <div id="statFirstTry" class="text-3xl font-extrabold text-white">0</div>
+        </div>
+
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
+          <div class="text-slate-400 text-xs font-bold mb-2">TOTAL ATTEMPTS LOGGED</div>
+          <div id="statAttempts" class="text-3xl font-extrabold text-white">0</div>
+        </div>
+      </div>
+
+      <!-- Teacher Table -->
+      <div id="teacherTableContainer" class="hidden bg-slate-900 rounded-2xl border border-slate-800 p-5 card-shadow">
+        <h3 class="text-base font-bold text-white mb-3">Student Performance Overview</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-950 text-slate-400">
+                <th class="p-3">Student Email</th>
+                <th class="p-3">Total Attempts</th>
+                <th class="p-3">First-Try 100s</th>
+                <th class="p-3">Highest Score</th>
+              </tr>
+            </thead>
+            <tbody id="teacherTableBody">
+              <tr><td colspan="4" class="p-3 text-slate-500">Loading student records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ SELECTOR -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-bold text-white">Available Practice Units</h2>
+        <p class="text-xs text-slate-400">Select any syllabus unit to take an interactive quiz</p>
+      </div>
+
+      <div id="quizCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="text-xs text-slate-500">Loading published units...</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- QUIZ MODAL -->
+  <div id="quizModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="w-full max-w-xl bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+        <div>
+          <span id="quizSubjectTag" class="px-2.5 py-0.5 text-[10px] font-bold rounded bg-emerald-950 text-emerald-300 border border-emerald-800/50">Subject</span>
+          <h3 id="quizModalTitle" class="text-base font-bold text-white mt-1">Unit Quiz</h3>
+        </div>
+        <button onclick="closeQuizModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+      </div>
+
+      <div id="quizQuestionBody" class="p-6 overflow-y-auto space-y-4 flex-1">
+        <!-- Questions -->
+      </div>
+
+      <div class="px-5 py-3 border-t border-slate-800 bg-slate-950 flex justify-end">
+        <button onclick="submitQuiz()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all">
+          Submit Final Quiz Score
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
     L. Hithadhoo School - Studyspace &copy; 2026
   </footer>
 
-  <!-- Application Logic -->
   <script>
-    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec"; 
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec";
 
-    let loadedUnits = [];
-    let currentQuizQuestions = [];
-    let currentQuestionIndex = 0;
-    let studentAnswers = {};
-    let activeQuizId = "";
-    let activeSheetId = "";
-    let currentUserEmail = "student@lhithadhooschool.edu.mv";
+    const PRAISE_MESSAGES = ["Good job! 🌟", "You're so smart! 💡", "You're great at this! ✨", "Let's get them all! 🚀", "Wonderful! 🎈", "Amazing! 🎉", "That's right! 🙌"];
+    const ENCOURAGEMENT_MESSAGES = ["You can get the next one! 💪", "That's okay! 🌱", "Don't worry! 😊", "You can get this next time! 🎯", "Mistakes make perfect! ✨"];
 
-    document.addEventListener("DOMContentLoaded", () => {
-      fetchQuizIndex();
-      fetchLeaderboard();
-    });
+    let currentUser = "";
+    let userRole = "";
+    let userTitle = "";
+    let userName = "";
+    let activeQuiz = null;
+    let activeQuestions = [];
+    let userAnswers = {};
+    let lockedQuestions = {};
 
-    async function fetchQuizIndex() {
-      try {
-        const res = await fetch(`${GAS_API_URL}?action=getQuizIndex`);
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          loadedUnits = data;
-          renderUnitSelectionCards();
-        } else {
-          document.getElementById("quiz-units-grid").innerHTML = `
-            <div class="col-span-full py-6 text-center text-rose-400 text-sm">
-              Error loading quiz index.
-            </div>`;
-        }
-      } catch (err) {
-        document.getElementById("quiz-units-grid").innerHTML = `
-          <div class="col-span-full py-6 text-center text-rose-400 text-sm">
-            Error connecting to server.
-          </div>`;
-      }
-    }
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById("emailInput").value.trim().toLowerCase();
+      const password = document.getElementById("passwordInput").value.trim();
+      const loginBtn = document.getElementById("loginBtn");
 
-    async function fetchLeaderboard() {
-      try {
-        const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          const userStat = data.find(s => s.email.toLowerCase() === currentUserEmail.toLowerCase());
-          if (userStat) {
-            document.getElementById("stat-best-score").innerText = `${userStat.bestScore}%`;
-            document.getElementById("stat-first-try").innerText = userStat.firstTry100s || 0;
-            document.getElementById("stat-attempts").innerText = userStat.attemptsCount || 0;
-          }
-        }
-      } catch (e) {
-        console.error("Error fetching stats:", e);
-      }
-    }
-
-    function renderUnitSelectionCards() {
-      const container = document.getElementById("quiz-units-grid");
-      if (!container) return;
-
-      if (loadedUnits.length === 0) {
-        container.innerHTML = `<div class="col-span-full text-center py-6 text-slate-500 text-sm">No unit quizzes published yet.</div>`;
+      if (!email || !password) {
+        alert("Please enter both your email and password.");
         return;
       }
 
-      container.innerHTML = loadedUnits.map(unit => {
-        const progress = getQuizProgress(unit.quizId);
-
-        return `
-          <div class="p-5 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-slate-700 transition flex flex-col justify-between">
-            <div>
-              <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded-full inline-block mb-3 border border-emerald-800/40">
-                ${unit.subject}
-              </span>
-              <h3 class="text-lg font-bold text-slate-100 mb-1">${unit.title}</h3>
-              <p class="text-xs text-slate-400 mb-4">Unit ${unit.unit}</p>
-            </div>
-
-            <div>
-              <!-- Dynamic Completion Progress Bar -->
-              <div class="mb-4">
-                <div class="flex justify-between text-xs text-slate-400 mb-1.5">
-                  <span>Progress</span>
-                  <span class="font-semibold text-emerald-400">${progress.percent}% Completed</span>
-                </div>
-                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
-                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${progress.percent}%"></div>
-                </div>
-              </div>
-
-              <button onclick="startQuiz('${unit.sheetId}', '${unit.quizId}', '${unit.subject}', '${unit.title}')" 
-                class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium rounded-lg border border-slate-700/50 transition flex items-center justify-center gap-2">
-                <span>${progress.percent > 0 ? (progress.percent === 100 ? 'Review Unit Quiz' : 'Continue Unit Quiz') : 'Start Unit Quiz'}</span>
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    async function startQuiz(sheetId, quizId, subject, title) {
-      activeQuizId = quizId;
-      activeSheetId = sheetId;
-
-      document.getElementById("modal-subject").innerText = subject || "Practice Unit";
-      document.getElementById("modal-title").innerText = title || "Interactive Quiz";
-      document.getElementById("quiz-modal").classList.remove("hidden");
-      document.getElementById("quiz-container").innerHTML = `<div class="text-center py-12 text-slate-400 text-sm">Loading questions...</div>`;
-
-      const savedProgress = getQuizProgress(quizId);
-      studentAnswers = savedProgress.answers || {};
+      loginBtn.innerText = "Verifying credentials...";
+      loginBtn.disabled = true;
 
       try {
-        const res = await fetch(`${GAS_API_URL}?action=getQuiz&sheetId=${sheetId}`);
+        const res = await fetch(`${GAS_API_URL}?action=checkUserRole&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+          method: "GET",
+          redirect: "follow"
+        });
         const data = await res.json();
-        
-        if (Array.isArray(data) && data.length > 0) {
-          currentQuizQuestions = data;
-          currentQuestionIndex = 0;
-          renderCurrentQuestion();
-        } else {
-          document.getElementById("quiz-container").innerHTML = `<div class="text-center py-8 text-rose-400 text-sm">No questions found in this sheet.</div>`;
+
+        if (!data.authenticated) {
+          alert(data.error || "Authentication failed. Please check your credentials.");
+          loginBtn.innerText = "Authenticate & Enter Portal →";
+          loginBtn.disabled = false;
+          return;
         }
+
+        currentUser = email;
+        userRole = data.role;     
+        userTitle = data.title;   
+        userName = data.name;     
+
+        document.getElementById("loginModal").classList.add("hidden");
+        updateUserUI();
+
+        if (userRole === "teacher") {
+          document.getElementById("teacherBanner").classList.remove("hidden");
+          document.getElementById("teacherTableContainer").classList.remove("hidden");
+          document.getElementById("studentStatsGrid").classList.add("hidden");
+          loadTeacherData();
+        } else {
+          document.getElementById("teacherBanner").classList.add("hidden");
+          document.getElementById("teacherTableContainer").classList.add("hidden");
+          document.getElementById("studentStatsGrid").classList.remove("hidden");
+          loadStudentStats();
+        }
+
+        loadQuizIndex();
+
       } catch (err) {
-        document.getElementById("quiz-container").innerHTML = `<div class="text-center py-8 text-rose-400 text-sm">Error opening quiz sheet.</div>`;
+        alert("Error connecting to Google Apps Script backend.");
+        loginBtn.innerText = "Authenticate & Enter Portal →";
+        loginBtn.disabled = false;
       }
     }
 
-    function renderCurrentQuestion() {
-      const container = document.getElementById("quiz-container");
-      if (!container || currentQuizQuestions.length === 0) return;
-
-      const q = currentQuizQuestions[currentQuestionIndex];
-      const total = currentQuizQuestions.length;
-      const isSelected = studentAnswers[currentQuestionIndex] !== undefined;
-      const isLast = currentQuestionIndex === total - 1;
-
-      let html = `
-        <div class="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-400 flex justify-between items-center">
-          <span>Question ${currentQuestionIndex + 1} of ${total}</span>
-          <span class="text-emerald-400">${Math.round((Object.keys(studentAnswers).length / total) * 100)}% Answered</span>
-        </div>
-
-        <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-lg">
-          <p class="text-slate-100 font-medium text-base mb-3 leading-relaxed">${q.question}</p>
-          
-          ${q.imageUrl ? `<div class="my-4 text-center"><img src="${q.imageUrl}" class="max-h-64 rounded-lg border border-slate-700 mx-auto shadow-md" /></div>` : ''}
-
-          <div class="space-y-2.5 mt-4">
-            ${q.options.map(opt => {
-              const selected = studentAnswers[currentQuestionIndex] === opt.id;
-              return `
-                <button onclick="selectOption('${opt.id}')" 
-                  class="w-full text-left p-3.5 rounded-lg border transition-all text-sm flex items-center ${
-                    selected 
-                      ? 'bg-emerald-950/80 border-emerald-500 text-emerald-100 font-semibold shadow' 
-                      : 'bg-slate-800/40 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:border-slate-600'
-                  }">
-                  <span class="inline-block w-7 text-center font-bold ${selected ? 'text-emerald-400' : 'text-slate-400'} mr-2">${opt.id}.</span> 
-                  <span>${opt.text}</span>
-                </button>
-              `;
-            }).join('')}
-          </div>
-        </div>
-
-        <div class="mt-6 flex justify-between items-center">
-          <button onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled class="opacity-30 cursor-not-allowed px-4 py-2 bg-slate-800 text-slate-400 rounded-lg text-sm"' : 'class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-sm transition"'}>
-            Previous
-          </button>
-
-          ${isLast ? `
-            <button onclick="submitQuiz()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg text-sm shadow-md transition">
-              Submit Final Quiz Score
-            </button>
-          ` : `
-            <button onclick="nextQuestion()" ${!isSelected ? 'disabled class="opacity-40 cursor-not-allowed px-5 py-2 bg-slate-800 text-slate-400 rounded-lg text-sm"' : 'class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg text-sm transition"'}>
-              Next Question
-            </button>
-          `}
+    function updateUserUI() {
+      const tag = document.getElementById("userProfileTag");
+      tag.innerHTML = `
+        <div class="text-right">
+          <div class="text-xs font-bold text-white">${userName || currentUser}</div>
+          <div class="text-[10px] font-semibold uppercase ${userRole === 'teacher' ? 'text-amber-400' : 'text-emerald-400'}">${userTitle || userRole}</div>
         </div>
       `;
-
-      container.innerHTML = html;
     }
 
-    function selectOption(optionId) {
-      studentAnswers[currentQuestionIndex] = optionId;
-      saveProgress();
-      renderCurrentQuestion();
-      renderUnitSelectionCards();
+    async function loadStudentStats() {
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
+        const data = await res.json();
+        const stat = data.find(s => s.email.toLowerCase() === currentUser);
+
+        if (stat) {
+          document.getElementById("statAvgScore").innerText = stat.bestScore + "%";
+          document.getElementById("statFirstTry").innerText = stat.firstTry100s;
+          document.getElementById("statAttempts").innerText = stat.attemptsCount;
+        }
+      } catch (e) { console.error(e); }
     }
 
-    function nextQuestion() {
-      if (currentQuestionIndex < currentQuizQuestions.length - 1) {
-        currentQuestionIndex++;
-        renderCurrentQuestion();
+    async function loadTeacherData() {
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
+        const data = await res.json();
+        const tbody = document.getElementById("teacherTableBody");
+        tbody.innerHTML = "";
+
+        if (!data || data.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='4' class='p-3 text-slate-500'>No student records recorded yet.</td></tr>";
+          return;
+        }
+
+        data.forEach(r => {
+          tbody.innerHTML += `
+            <tr class="border-b border-slate-800/60">
+              <td class="p-3 font-semibold text-slate-200">${r.email}</td>
+              <td class="p-3 text-slate-300">${r.attemptsCount}</td>
+              <td class="p-3 text-amber-300">🏅 ${r.firstTry100s}</td>
+              <td class="p-3 font-bold text-emerald-400">${r.bestScore}%</td>
+            </tr>
+          `;
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadQuizIndex() {
+      const grid = document.getElementById("quizCardsGrid");
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=getQuizIndex`);
+        const list = await res.json();
+        grid.innerHTML = "";
+
+        if (!list || list.length === 0) {
+          grid.innerHTML = "<div class='text-xs text-slate-500'>No published quizzes found in Quiz_Index.</div>";
+          return;
+        }
+
+        list.forEach(q => {
+          grid.innerHTML += `
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 card-shadow flex flex-col justify-between">
+              <div>
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-800 text-emerald-400 border border-slate-700/50">${q.subject}</span>
+                <h3 class="font-bold text-white text-base mt-2">${q.unit}</h3>
+                <p class="text-xs text-slate-400 mb-4">${q.title}</p>
+              </div>
+              <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.title}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all cursor-pointer">
+                Start Unit Quiz &rarr;
+              </button>
+            </div>
+          `;
+        });
+      } catch (e) {
+        grid.innerHTML = "<div class='text-xs text-rose-400'>Error loading quiz index.</div>";
       }
     }
 
-    function prevQuestion() {
-      if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        renderCurrentQuestion();
-      }
+    async function startQuiz(sheetId, subject, title, quizId) {
+      activeQuiz = { sheetId, subject, title, quizId };
+      userAnswers = {};
+      lockedQuestions = {};
+
+      document.getElementById("quizSubjectTag").innerText = subject;
+      document.getElementById("quizModalTitle").innerText = title;
+      document.getElementById("quizQuestionBody").innerHTML = "<div class='text-xs text-slate-500'>Loading questions...</div>";
+      document.getElementById("quizModal").classList.remove("hidden");
+
+      const res = await fetch(`${GAS_API_URL}?action=getQuiz&sheetId=${sheetId}`);
+      activeQuestions = await res.json();
+      renderQuizQuestions();
     }
 
-    function saveProgress() {
-      if (!activeQuizId) return;
-      const attemptedCount = Object.keys(studentAnswers).length;
-      const totalCount = currentQuizQuestions.length;
-      const percent = totalCount > 0 ? Math.round((attemptedCount / totalCount) * 100) : 0;
+    function renderQuizQuestions() {
+      const container = document.getElementById("quizQuestionBody");
+      container.innerHTML = "";
 
-      const progressData = {
-        attempted: attemptedCount,
-        total: totalCount,
-        percent: percent,
-        answers: studentAnswers
-      };
+      activeQuestions.forEach((q, idx) => {
+        const qCard = document.createElement("div");
+        qCard.className = "p-4 border border-slate-800 rounded-xl space-y-2 bg-slate-950";
+        qCard.innerHTML = `<h4 class="text-sm font-bold text-white">Q${idx + 1}. ${q.question}</h4>`;
 
-      localStorage.setItem(`quiz_progress_${activeQuizId}`, JSON.stringify(progressData));
+        if (q.imageUrl) {
+          qCard.innerHTML += `<img src="${q.imageUrl}" class="max-w-full rounded-lg my-2 border border-slate-800" />`;
+        }
+
+        const optsContainer = document.createElement("div");
+        optsContainer.className = "space-y-1.5";
+
+        q.options.forEach(opt => {
+          const btn = document.createElement("button");
+          btn.className = "w-full text-left p-3 rounded-xl border text-xs font-medium transition-all bg-slate-900 border-slate-800 text-slate-200 hover:border-emerald-500 hover:text-white cursor-pointer";
+          btn.innerText = `${opt.id}. ${opt.text}`;
+
+          if (lockedQuestions[idx]) {
+            btn.disabled = true;
+            btn.classList.remove("cursor-pointer");
+            if (opt.id === q.correctOption) {
+              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-emerald-950/80 border-emerald-500 text-emerald-300";
+            }
+            if (userAnswers[idx]?.selected === opt.id && opt.id !== q.correctOption) {
+              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-rose-950/80 border-rose-500 text-rose-300";
+            }
+          } else {
+            btn.onclick = () => chooseAnswer(idx, opt.id, q.correctOption);
+          }
+
+          optsContainer.appendChild(btn);
+        });
+
+        qCard.appendChild(optsContainer);
+
+        if (lockedQuestions[idx]) {
+          const isCorrect = userAnswers[idx].selected === q.correctOption;
+          const feedback = document.createElement("div");
+          feedback.className = `p-2.5 rounded-lg text-xs font-bold border mt-2 ${isCorrect ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : 'bg-rose-950/60 text-rose-300 border-rose-800'}`;
+          feedback.innerText = userAnswers[idx].feedbackMsg;
+          qCard.appendChild(feedback);
+
+          if (q.explanation) {
+            const exp = document.createElement("div");
+            exp.className = "p-2.5 bg-slate-900 text-slate-300 text-xs rounded-lg border border-slate-800 mt-2";
+            exp.innerHTML = `<strong class="text-emerald-400">Explanation:</strong> ${q.explanation}`;
+            qCard.appendChild(exp);
+          }
+        }
+
+        container.appendChild(qCard);
+      });
     }
 
-    function getQuizProgress(quizId) {
-      const data = localStorage.getItem(`quiz_progress_${quizId}`);
-      return data ? JSON.parse(data) : { attempted: 0, total: 0, percent: 0, answers: {} };
+    function chooseAnswer(qIdx, selectedOptId, correctOptId) {
+      if (lockedQuestions[qIdx]) return;
+
+      const isCorrect = selectedOptId === correctOptId;
+      const msgList = isCorrect ? PRAISE_MESSAGES : ENCOURAGEMENT_MESSAGES;
+      const feedbackMsg = msgList[Math.floor(Math.random() * msgList.length)];
+
+      userAnswers[qIdx] = { selected: selectedOptId, feedbackMsg };
+      lockedQuestions[qIdx] = true;
+      renderQuizQuestions();
     }
 
     async function submitQuiz() {
-      let correctCount = 0;
-      currentQuizQuestions.forEach((q, idx) => {
-        if (studentAnswers[idx] === q.correctOption) {
-          correctCount++;
-        }
+      let scoreCount = 0;
+      activeQuestions.forEach((q, idx) => {
+        if (userAnswers[idx]?.selected === q.correctOption) scoreCount++;
       });
 
-      const scorePercent = Math.round((correctCount / currentQuizQuestions.length) * 100);
-      const isFirst100 = scorePercent === 100;
+      const percent = Math.round((scoreCount / activeQuestions.length) * 100);
 
-      document.getElementById("quiz-container").innerHTML = `
-        <div class="text-center py-8">
-          <div class="text-4xl font-extrabold text-emerald-400 mb-2">${scorePercent}%</div>
-          <p class="text-slate-300 text-sm mb-4">You answered ${correctCount} out of ${currentQuizQuestions.length} questions correctly.</p>
-          <p class="text-xs text-slate-400 mb-6">Recording attempt result to database...</p>
-          <button onclick="closeQuizModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-sm font-medium">
-            Return to Study Space
-          </button>
-        </div>
-      `;
+      alert(`Quiz Submitted!\nScore: ${percent}% (${scoreCount}/${activeQuestions.length} correct)`);
 
-      try {
-        await fetch(GAS_API_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "submitResult",
-            email: currentUserEmail,
-            quizId: activeQuizId,
-            score: scorePercent,
-            attemptNumber: 1,
-            isFirstTry100: isFirst100
-          })
-        });
-        fetchLeaderboard();
-      } catch (e) {
-        console.error("Error logging score:", e);
+      await fetch(GAS_API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "submitResult",
+          email: currentUser,
+          quizId: activeQuiz.quizId,
+          score: percent,
+          attemptNumber: 1,
+          isFirstTry100: percent === 100
+        })
+      });
+
+      closeQuizModal();
+      if (userRole === "teacher") {
+        loadTeacherData();
+      } else {
+        loadStudentStats();
       }
     }
 
     function closeQuizModal() {
-      document.getElementById("quiz-modal").classList.add("hidden");
+      document.getElementById("quizModal").classList.add("hidden");
     }
+
+    window.onload = () => {
+      document.getElementById("loginModal").classList.remove("hidden");
+    };
   </script>
 </body>
 </html>
