@@ -1,254 +1,482 @@
-<script>
-  const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec";
-
-  const PRAISE_MESSAGES = ["Good job! 🌟", "You're so smart! 💡", "You're great at this! ✨", "Let's get them all! 🚀", "Wonderful! 🎈", "Amazing! 🎉", "That's right! 🙌"];
-  const ENCOURAGEMENT_MESSAGES = ["You can get the next one! 💪", "That's okay! 🌱", "Don't worry! 😊", "You can get this next time! 🎯", "Mistakes make perfect! ✨"];
-
-  const MOTIVATIONAL_QUOTES = [
-    `"Success is the sum of small efforts, repeated day in and day out."`,
-    `"Believe you can and you're halfway there."`,
-    `"Don't watch the clock; do what it does. Keep going."`,
-    `"The expert in anything was once a beginner."`,
-    `"Strive for progress, not perfection."`
-  ];
-
-  let currentUser = "";
-  let userRole = "";
-  let userTitle = "";
-  let userName = "";
-  let commonName = "";
-  let activeQuiz = null;
-  let activeQuestions = [];
-  let userAnswers = {};
-  let lockedQuestions = {};
-  let currentQuestionIndex = 0;
-
-  // Resilient Fetch with Auto-Retry for GAS Cold Starts
-  async function fetchWithRetry(url, options = {}, retries = 3, backoff = 1000) {
-    for (let i = 0; i < retries; i++) {
-      try {
-        const res = await fetch(url, options);
-        if (res.ok) return await res.json();
-      } catch (err) {
-        if (i === retries - 1) throw err;
-        await new Promise(r => setTimeout(r, backoff * (i + 1))); // Wait 1s, then 2s
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L. Hithadhoo School - Studyspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+        }
       }
     }
-  }
+  </script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5); }
+    .card-shadow:hover { box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.15); }
 
-  function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+    /* Independent Popup: Fly in from below -> pause -> fly up & away */
+    @keyframes flyInAndAway {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 25px) scale(0.9);
+      }
+      18% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1.02);
+      }
+      25% {
+        transform: translate(-50%, 0) scale(1);
+      }
+      75% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -35px) scale(0.95);
+      }
     }
-    return array;
-  }
-
-  function getSavedUnitProgress(quizId) {
-    const data = localStorage.getItem(`unit_progress_${quizId}`);
-    return data ? JSON.parse(data) : { answered: 0, total: 30, percent: 0 };
-  }
-
-  function saveUnitProgress(quizId, answeredCount, totalCount) {
-    const percent = totalCount > 0 ? Math.round((answeredCount / totalCount) * 100) : 0;
-    localStorage.setItem(`unit_progress_${quizId}`, JSON.stringify({ answered: answeredCount, total: totalCount, percent }));
-  }
-
-  async function handleLoginSubmit(e) {
-    if (e) e.preventDefault();
-    const email = document.getElementById("emailInput").value.trim().toLowerCase();
-    const password = document.getElementById("passwordInput").value.trim();
-    const loginBtn = document.getElementById("loginBtn");
-
-    if (!email || !password) {
-      alert("Please enter both your email and password.");
-      return;
+    .animate-fly-popup {
+      animation: flyInAndAway 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
-    loginBtn.innerText = "Verifying credentials (connecting to Google)...";
-    loginBtn.disabled = true;
+    @keyframes floatInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-float-in {
+      animation: floatInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col">
 
-    try {
-      const data = await fetchWithRetry(`${GAS_API_URL}?action=checkUserRole&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+  <!-- TOP NAVBAR -->
+  <header class="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- SCHOOL LOGO -->
+        <img 
+          src="logo.png" 
+          alt="L. Hithadhoo School Logo" 
+          class="h-10 w-10 object-contain rounded-xl bg-slate-800 border border-slate-700 p-0.5"
+          onerror="this.onerror=null; this.outerHTML='<div class=\'h-10 w-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm\'>LHS</div>';"
+        />
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-white text-lg sm:text-xl tracking-tight">L. Hithadhoo School</span>
+          </div>
+          <p class="text-[11px] font-medium text-emerald-400 hidden sm:block">Studyspace</p>
+        </div>
+      </div>
 
-      if (!data || !data.authenticated) {
-        alert(data?.error || "Authentication failed. Please check your credentials.");
+      <div id="navUserSection" class="flex items-center gap-3">
+        <div id="userProfileTag" class="flex items-center gap-2">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-700 to-teal-800 p-6 text-white text-center border-b border-emerald-600/30">
+        <!-- SCHOOL LOGO ON LOGIN MODAL -->
+        <div class="inline-flex h-14 w-14 rounded-2xl bg-white p-2 items-center justify-center mb-3 shadow-lg">
+          <img 
+            src="logo.png" 
+            alt="L. Hithadhoo School Logo" 
+            class="h-full w-full object-contain"
+            onerror="this.onerror=null; this.outerHTML='<span class=\'text-2xl\'>🎓</span>';"
+          />
+        </div>
+        <h2 class="text-2xl font-extrabold tracking-tight text-white">L. Hithadhoo School</h2>
+        <p class="text-xs font-semibold text-emerald-200 mt-1">Studyspace</p>
+      </div>
+
+      <form id="loginForm" class="p-6 space-y-4" onsubmit="handleLoginSubmit(event)">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">School Email Address</label>
+          <input 
+            type="email" 
+            id="emailInput" 
+            required 
+            placeholder="name@lhithadhooschool.edu.mv"
+            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Account Password</label>
+          <input 
+            type="password" 
+            id="passwordInput" 
+            required 
+            placeholder="••••••••"
+            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          id="loginBtn"
+          class="w-full py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-emerald-400 hover:bg-emerald-300 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+        >
+          Authenticate &amp; Enter Portal &rarr;
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-8">
+
+    <!-- WELCOME BOARD -->
+    <div id="welcomeBoard" class="bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-900 p-6 rounded-2xl border border-emerald-800/40 card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h2 id="welcomeTitle" class="text-2xl font-extrabold text-white tracking-tight">Welcome!</h2>
+        <p id="motivationalQuote" class="text-xs font-medium text-emerald-400/90 mt-1 italic">"Success is the sum of small efforts, repeated day in and day out."</p>
+      </div>
+      <div class="px-3 py-1.5 rounded-xl bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 text-xs font-bold w-max">
+        🚀 Keep practicing &amp; reach your goals!
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section id="dashboardSection" class="space-y-5">
+      <!-- School Banner -->
+      <div id="teacherBanner" class="hidden p-4 rounded-2xl bg-amber-950/40 border border-amber-600/50 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="h-9 w-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-extrabold text-sm">SMT</span>
+          <div>
+            <div class="text-xs font-bold text-amber-300">School View Active</div>
+            <div class="text-[11px] text-amber-200/80">Displaying aggregate student attempts and performance records</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Stats -->
+      <div id="studentStatsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
+          <div class="text-slate-400 text-xs font-bold mb-2">BEST RECORDED SCORE</div>
+          <div id="statAvgScore" class="text-3xl font-extrabold text-emerald-400">0%</div>
+        </div>
+
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
+          <div class="text-slate-400 text-xs font-bold mb-2">FIRST-TRY 100s</div>
+          <div id="statFirstTry" class="text-3xl font-extrabold text-white">0</div>
+        </div>
+
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
+          <div class="text-slate-400 text-xs font-bold mb-2">TOTAL ATTEMPTS LOGGED</div>
+          <div id="statAttempts" class="text-3xl font-extrabold text-white">0</div>
+        </div>
+      </div>
+
+      <!-- Teacher Table -->
+      <div id="teacherTableContainer" class="hidden bg-slate-900 rounded-2xl border border-slate-800 p-5 card-shadow">
+        <h3 class="text-base font-bold text-white mb-3">Student Performance Overview</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-950 text-slate-400">
+                <th class="p-3">Student Email</th>
+                <th class="p-3">Total Attempts</th>
+                <th class="p-3">First-Try 100s</th>
+                <th class="p-3">Highest Score</th>
+              </tr>
+            </thead>
+            <tbody id="teacherTableBody">
+              <tr><td colspan="4" class="p-3 text-slate-500">Loading student records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ SELECTOR -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-bold text-white">Let's Practice!</h2>
+        <p class="text-xs text-slate-400">Select any syllabus unit to take an interactive quiz</p>
+      </div>
+
+      <div id="quizCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="text-xs text-slate-500">Loading published units...</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- QUIZ MODAL -->
+  <div id="quizModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="w-full max-w-xl bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+        <div>
+          <span id="quizSubjectTag" class="px-2.5 py-0.5 text-[10px] font-bold rounded bg-emerald-950 text-emerald-300 border border-emerald-800/50">Subject</span>
+          <h3 id="quizModalTitle" class="text-base font-bold text-white mt-1">Unit Quiz</h3>
+        </div>
+        <button onclick="closeQuizModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+      </div>
+
+      <div id="quizQuestionBody" class="p-6 overflow-y-auto space-y-4 flex-1 relative">
+        <!-- Questions -->
+      </div>
+
+      <div class="px-5 py-3 border-t border-slate-800 bg-slate-950 flex justify-end items-center">
+        <button id="nextBtn" onclick="nextQuestion()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer">
+          Next Question &rarr;
+        </button>
+        <button id="submitBtn" onclick="submitQuiz()" class="hidden px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer">
+          Submit Final Quiz Score
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+    L. Hithadhoo School - Studyspace &copy; 2026
+  </footer>
+
+  <script>
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec";
+
+    const PRAISE_MESSAGES = ["Good job! 🌟", "You're so smart! 💡", "You're great at this! ✨", "Let's get them all! 🚀", "Wonderful! 🎈", "Amazing! 🎉", "That's right! 🙌"];
+    const ENCOURAGEMENT_MESSAGES = ["You can get the next one! 💪", "That's okay! 🌱", "Don't worry! 😊", "You can get this next time! 🎯", "Mistakes make perfect! ✨"];
+
+    const MOTIVATIONAL_QUOTES = [
+      `"Success is the sum of small efforts, repeated day in and day out."`,
+      `"Believe you can and you're halfway there."`,
+      `"Don't watch the clock; do what it does. Keep going."`,
+      `"The expert in anything was once a beginner."`,
+      `"Strive for progress, not perfection."`
+    ];
+
+    let currentUser = "";
+    let userRole = "";
+    let userTitle = "";
+    let userName = "";
+    let commonName = "";
+    let activeQuiz = null;
+    let activeQuestions = [];
+    let userAnswers = {};
+    let lockedQuestions = {};
+    let currentQuestionIndex = 0;
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function getSavedUnitProgress(quizId) {
+      const data = localStorage.getItem(`unit_progress_${quizId}`);
+      return data ? JSON.parse(data) : { answered: 0, total: 30, percent: 0 };
+    }
+
+    function saveUnitProgress(quizId, answeredCount, totalCount) {
+      const percent = totalCount > 0 ? Math.round((answeredCount / totalCount) * 100) : 0;
+      localStorage.setItem(`unit_progress_${quizId}`, JSON.stringify({ answered: answeredCount, total: totalCount, percent }));
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById("emailInput").value.trim().toLowerCase();
+      const password = document.getElementById("passwordInput").value.trim();
+      const loginBtn = document.getElementById("loginBtn");
+
+      if (!email || !password) {
+        alert("Please enter both your email and password.");
+        return;
+      }
+
+      loginBtn.innerText = "Verifying credentials...";
+      loginBtn.disabled = true;
+
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=checkUserRole&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+          method: "GET",
+          redirect: "follow"
+        });
+        const data = await res.json();
+
+        if (!data.authenticated) {
+          alert(data.error || "Authentication failed. Please check your credentials.");
+          loginBtn.innerText = "Authenticate & Enter Portal →";
+          loginBtn.disabled = false;
+          return;
+        }
+
+        currentUser = email;
+        userRole = data.role;     
+        userTitle = data.title;   
+        userName = data.name || "";     
+
+        // Strictly capture Column D (commonName)
+        if (data.commonName) {
+          commonName = data.commonName;
+        } else if (data.name) {
+          // Fallback parsing if backend hasn't re-deployed yet
+          const nameParts = data.name.trim().split(" ");
+          commonName = nameParts.length > 1 ? nameParts[1] : nameParts[0];
+        } else {
+          commonName = "Student";
+        }
+
+        document.getElementById("loginModal").classList.add("hidden");
+        updateUserUI();
+
+        if (userRole === "teacher") {
+          document.getElementById("teacherBanner").classList.remove("hidden");
+          document.getElementById("teacherTableContainer").classList.remove("hidden");
+          document.getElementById("studentStatsGrid").classList.add("hidden");
+          loadTeacherData();
+        } else {
+          document.getElementById("teacherBanner").classList.add("hidden");
+          document.getElementById("teacherTableContainer").classList.add("hidden");
+          document.getElementById("studentStatsGrid").classList.remove("hidden");
+          loadStudentStats();
+        }
+
+        loadQuizIndex();
+
+      } catch (err) {
+        alert("Error connecting to Google Apps Script backend.");
         loginBtn.innerText = "Authenticate & Enter Portal →";
         loginBtn.disabled = false;
-        return;
       }
-
-      currentUser = email;
-      userRole = data.role;     
-      userTitle = data.title;   
-      userName = data.name || "";     
-
-      if (data.commonName) {
-        commonName = data.commonName;
-      } else if (data.name) {
-        const nameParts = data.name.trim().split(" ");
-        commonName = nameParts.length > 1 ? nameParts[1] : nameParts[0];
-      } else {
-        commonName = "Student";
-      }
-
-      // SAVE SESSION TO LOCALSTORAGE FOR PERMANENT PERSISTENCE ACROSS CLOSING TAB/BROWSER
-      localStorage.setItem("lhs_user_session", JSON.stringify({
-        email: currentUser,
-        role: userRole,
-        title: userTitle,
-        name: userName,
-        commonName: commonName
-      }));
-
-      initPortalSession();
-
-    } catch (err) {
-      alert("Google Apps Script is taking too long to respond. Please click login again.");
-      loginBtn.innerText = "Authenticate & Enter Portal →";
-      loginBtn.disabled = false;
-    }
-  }
-
-  function initPortalSession() {
-    document.getElementById("loginModal").classList.add("hidden");
-    updateUserUI();
-
-    if (userRole === "teacher") {
-      document.getElementById("teacherBanner").classList.remove("hidden");
-      document.getElementById("teacherTableContainer").classList.remove("hidden");
-      document.getElementById("studentStatsGrid").classList.add("hidden");
-      loadTeacherData();
-    } else {
-      document.getElementById("teacherBanner").classList.add("hidden");
-      document.getElementById("teacherTableContainer").classList.add("hidden");
-      document.getElementById("studentStatsGrid").classList.remove("hidden");
-      loadStudentStats();
     }
 
-    loadQuizIndex();
-  }
+    function updateUserUI() {
+      const tag = document.getElementById("userProfileTag");
+      tag.innerHTML = `
+        <div class="text-right">
+          <div class="text-xs font-bold text-white">${userName || currentUser}</div>
+          <div class="text-[10px] font-semibold uppercase ${userRole === 'teacher' ? 'text-amber-400' : 'text-emerald-400'}">${userTitle || userRole}</div>
+        </div>
+      `;
 
-  function updateUserUI() {
-    const tag = document.getElementById("userProfileTag");
-    tag.innerHTML = `
-      <div class="text-right">
-        <div class="text-xs font-bold text-white">${userName || currentUser}</div>
-        <div class="text-[10px] font-semibold uppercase ${userRole === 'teacher' ? 'text-amber-400' : 'text-emerald-400'}">${userTitle || userRole}</div>
-      </div>
-      <button onclick="logoutUser()" class="ml-2 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] rounded-lg border border-slate-700 cursor-pointer">Logout</button>
-    `;
+      // Render Common Name in Welcome Board
+      document.getElementById("welcomeTitle").innerText = `Welcome ${commonName}!`;
+      const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
+      document.getElementById("motivationalQuote").innerText = randomQuote;
+    }
 
-    document.getElementById("welcomeTitle").innerText = `Welcome ${commonName}!`;
-    const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
-    document.getElementById("motivationalQuote").innerText = randomQuote;
-  }
+    async function loadStudentStats() {
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
+        const data = await res.json();
+        const stat = data.find(s => s.email.toLowerCase() === currentUser);
 
-  function logoutUser() {
-    localStorage.removeItem("lhs_user_session");
-    sessionStorage.removeItem("lhs_user_session");
-    location.reload();
-  }
+        if (stat) {
+          document.getElementById("statAvgScore").innerText = stat.bestScore + "%";
+          document.getElementById("statFirstTry").innerText = stat.firstTry100s;
+          document.getElementById("statAttempts").innerText = stat.attemptsCount;
+        }
+      } catch (e) { console.error(e); }
+    }
 
-  async function loadStudentStats() {
-    try {
-      const data = await fetchWithRetry(`${GAS_API_URL}?action=getLeaderboard`);
-      const stat = data.find(s => s.email.toLowerCase() === currentUser);
+    async function loadTeacherData() {
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
+        const data = await res.json();
+        const tbody = document.getElementById("teacherTableBody");
+        tbody.innerHTML = "";
 
-      if (stat) {
-        document.getElementById("statAvgScore").innerText = stat.bestScore + "%";
-        document.getElementById("statFirstTry").innerText = stat.firstTry100s;
-        document.getElementById("statAttempts").innerText = stat.attemptsCount;
-      }
-    } catch (e) { console.error(e); }
-  }
+        if (!data || data.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='4' class='p-3 text-slate-500'>No student records recorded yet.</td></tr>";
+          return;
+        }
 
-  async function loadTeacherData() {
-    try {
-      const data = await fetchWithRetry(`${GAS_API_URL}?action=getLeaderboard`);
-      const tbody = document.getElementById("teacherTableBody");
-      tbody.innerHTML = "";
+        data.forEach(r => {
+          tbody.innerHTML += `
+            <tr class="border-b border-slate-800/60">
+              <td class="p-3 font-semibold text-slate-200">${r.email}</td>
+              <td class="p-3 text-slate-300">${r.attemptsCount}</td>
+              <td class="p-3 text-amber-300">🏅 ${r.firstTry100s}</td>
+              <td class="p-3 font-bold text-emerald-400">${r.bestScore}%</td>
+            </tr>
+          `;
+        });
+      } catch (e) { console.error(e); }
+    }
 
-      if (!data || data.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='4' class='p-3 text-slate-500'>No student records recorded yet.</td></tr>";
-        return;
-      }
+    async function loadQuizIndex() {
+      const grid = document.getElementById("quizCardsGrid");
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=getQuizIndex`);
+        const list = await res.json();
+        grid.innerHTML = "";
 
-      data.forEach(r => {
-        tbody.innerHTML += `
-          <tr class="border-b border-slate-800/60">
-            <td class="p-3 font-semibold text-slate-200">${r.email}</td>
-            <td class="p-3 text-slate-300">${r.attemptsCount}</td>
-            <td class="p-3 text-amber-300">🏅 ${r.firstTry100s}</td>
-            <td class="p-3 font-bold text-emerald-400">${r.bestScore}%</td>
-          </tr>
-        `;
-      });
-    } catch (e) { console.error(e); }
-  }
+        if (!list || list.length === 0) {
+          grid.innerHTML = "<div class='text-xs text-slate-500'>No published quizzes found in Quiz_Index.</div>";
+          return;
+        }
 
-  // REFRESH UNITS FUNCTION
-  async function refreshUnits() {
-    const grid = document.getElementById("quizCardsGrid");
-    grid.innerHTML = "<div class='text-xs text-slate-400 p-4'>Refreshing units list...</div>";
-    await loadQuizIndex();
-  }
-
-  async function loadQuizIndex() {
-    const grid = document.getElementById("quizCardsGrid");
-    try {
-      const list = await fetchWithRetry(`${GAS_API_URL}?action=getQuizIndex`);
-      grid.innerHTML = "";
-
-      if (!list || list.length === 0) {
-        grid.innerHTML = "<div class='text-xs text-slate-500'>No published quizzes found in Quiz_Index.</div>";
-        return;
-      }
-
-      list.forEach(q => {
-        const prog = getSavedUnitProgress(q.quizId);
-        grid.innerHTML += `
-          <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 card-shadow flex flex-col justify-between">
-            <div>
-              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-800 text-emerald-400 border border-slate-700/50">${q.subject}</span>
-              <h3 class="font-bold text-white text-base mt-2">${q.unit}</h3>
-              <p class="text-xs text-slate-400 mb-3">${q.title}</p>
-              
-              <div class="mb-4">
-                <div class="flex justify-between items-center text-[11px] font-semibold text-slate-400 mb-1">
-                  <span>Progress</span>
-                  <span class="text-emerald-400">${prog.percent}%</span>
-                </div>
-                <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${prog.percent}%"></div>
+        list.forEach(q => {
+          const prog = getSavedUnitProgress(q.quizId);
+          grid.innerHTML += `
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 card-shadow flex flex-col justify-between">
+              <div>
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-800 text-emerald-400 border border-slate-700/50">${q.subject}</span>
+                <h3 class="font-bold text-white text-base mt-2">${q.unit}</h3>
+                <p class="text-xs text-slate-400 mb-3">${q.title}</p>
+                
+                <!-- Unit Card Progress Bar -->
+                <div class="mb-4">
+                  <div class="flex justify-between items-center text-[11px] font-semibold text-slate-400 mb-1">
+                    <span>Progress</span>
+                    <span class="text-emerald-400">${prog.percent}%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${prog.percent}%"></div>
+                  </div>
                 </div>
               </div>
+
+              <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.title}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all cursor-pointer">
+                ${prog.answered > 0 ? 'Continue Unit Quiz &rarr;' : 'Start Unit Quiz &rarr;'}
+              </button>
             </div>
-
-            <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.title}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all cursor-pointer">
-              ${prog.answered > 0 ? 'Continue Unit Quiz &rarr;' : 'Start Unit Quiz &rarr;'}
-            </button>
-          </div>
-        `;
-      });
-    } catch (e) {
-      grid.innerHTML = "<div class='text-xs text-rose-400 flex items-center gap-2'>Error loading quiz index. <button onclick='refreshUnits()' class='underline font-bold text-white cursor-pointer'>Tap here to try again</button></div>";
+          `;
+        });
+      } catch (e) {
+        grid.innerHTML = "<div class='text-xs text-rose-400'>Error loading quiz index.</div>";
+      }
     }
-  }
 
-  async function startQuiz(sheetId, subject, title, quizId) {
-    activeQuiz = { sheetId, subject, title, quizId };
-    userAnswers = {};
-    lockedQuestions = {};
-    currentQuestionIndex = 0;
+    async function startQuiz(sheetId, subject, title, quizId) {
+      activeQuiz = { sheetId, subject, title, quizId };
+      userAnswers = {};
+      lockedQuestions = {};
+      currentQuestionIndex = 0;
 
-    document.getElementById("quizSubjectTag").innerText = subject;
-    document.getElementById("quizModalTitle").innerText = title;
-    document.getElementById("quizQuestionBody").innerHTML = "<div class='text-xs text-slate-500 p-4 text-center'>Loading questions from Google Sheets...</div>";
-    document.getElementById("quizModal").classList.remove("hidden");
+      document.getElementById("quizSubjectTag").innerText = subject;
+      document.getElementById("quizModalTitle").innerText = title;
+      document.getElementById("quizQuestionBody").innerHTML = "<div class='text-xs text-slate-500'>Loading questions...</div>";
+      document.getElementById("quizModal").classList.remove("hidden");
 
-    try {
-      const fetchedQuestions = await fetchWithRetry(`${GAS_API_URL}?action=getQuiz&sheetId=${sheetId}`);
+      const res = await fetch(`${GAS_API_URL}?action=getQuiz&sheetId=${sheetId}`);
+      const fetchedQuestions = await res.json();
       
       if (Array.isArray(fetchedQuestions)) {
         const shuffled = shuffleArray(fetchedQuestions).map(q => {
@@ -263,157 +491,153 @@
       }
 
       renderQuizQuestions();
-    } catch (e) {
-      document.getElementById("quizQuestionBody").innerHTML = "<div class='text-xs text-rose-400 p-4 text-center'>Failed to load questions. Close and click Start Quiz again.</div>";
     }
-  }
 
-  function renderQuizQuestions() {
-    const container = document.getElementById("quizQuestionBody");
-    container.innerHTML = "";
+    function renderQuizQuestions() {
+      const container = document.getElementById("quizQuestionBody");
+      container.innerHTML = "";
 
-    if (!activeQuestions || activeQuestions.length === 0) return;
+      if (!activeQuestions || activeQuestions.length === 0) return;
 
-    const idx = currentQuestionIndex;
-    const q = activeQuestions[idx];
+      const idx = currentQuestionIndex;
+      const q = activeQuestions[idx];
 
-    let correctAnswersCount = 0;
-    Object.keys(lockedQuestions).forEach(qKey => {
-      if (userAnswers[qKey]?.selected === activeQuestions[qKey].correctOption) {
-        correctAnswersCount++;
+      let correctAnswersCount = 0;
+      Object.keys(lockedQuestions).forEach(qKey => {
+        if (userAnswers[qKey]?.selected === activeQuestions[qKey].correctOption) {
+          correctAnswersCount++;
+        }
+      });
+      const progressPercent = Math.round((correctAnswersCount / activeQuestions.length) * 100);
+
+      const qCard = document.createElement("div");
+      qCard.className = "p-4 border border-slate-800 rounded-xl space-y-2 bg-slate-950 relative";
+      
+      const qHeader = document.createElement("div");
+      qHeader.className = "flex flex-col gap-2 mb-2";
+      qHeader.innerHTML = `
+        <div class="flex justify-between items-center text-[11px] font-bold">
+          <span class="text-emerald-400">Question ${idx + 1} of ${activeQuestions.length}</span>
+          <span class="text-slate-400">Score Progress: ${correctAnswersCount}/${activeQuestions.length} (${progressPercent}%)</span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+          <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${progressPercent}%"></div>
+        </div>
+      `;
+      qCard.appendChild(qHeader);
+
+      const qTitle = document.createElement("h4");
+      qTitle.className = "text-sm font-bold text-white";
+      qTitle.innerText = `Q${idx + 1}. ${q.question}`;
+      qCard.appendChild(qTitle);
+
+      if (q.imageUrl) {
+        qCard.innerHTML += `<img src="${q.imageUrl}" class="max-w-full rounded-lg my-2 border border-slate-800" />`;
       }
-    });
-    const progressPercent = Math.round((correctAnswersCount / activeQuestions.length) * 100);
 
-    const qCard = document.createElement("div");
-    qCard.className = "p-4 border border-slate-800 rounded-xl space-y-2 bg-slate-950 relative";
-    
-    const qHeader = document.createElement("div");
-    qHeader.className = "flex flex-col gap-2 mb-2";
-    qHeader.innerHTML = `
-      <div class="flex justify-between items-center text-[11px] font-bold">
-        <span class="text-emerald-400">Question ${idx + 1} of ${activeQuestions.length}</span>
-        <span class="text-slate-400">Score Progress: ${correctAnswersCount}/${activeQuestions.length} (${progressPercent}%)</span>
-      </div>
-      <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-        <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${progressPercent}%"></div>
-      </div>
-    `;
-    qCard.appendChild(qHeader);
+      const optsContainer = document.createElement("div");
+      optsContainer.className = "space-y-1.5 mt-2";
 
-    const qTitle = document.createElement("h4");
-    qTitle.className = "text-sm font-bold text-white";
-    qTitle.innerText = `Q${idx + 1}. ${q.question}`;
-    qCard.appendChild(qTitle);
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left p-3 rounded-xl border text-xs font-medium transition-all bg-slate-900 border-slate-800 text-slate-200 hover:border-emerald-500 hover:text-white cursor-pointer";
+        btn.innerText = `${opt.id}. ${opt.text}`;
 
-    if (q.imageUrl) {
-      qCard.innerHTML += `<img src="${q.imageUrl}" class="max-w-full rounded-lg my-2 border border-slate-800" />`;
-    }
+        if (lockedQuestions[idx]) {
+          btn.disabled = true;
+          btn.classList.remove("cursor-pointer");
+          if (opt.id === q.correctOption) {
+            btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-emerald-950/80 border-emerald-500 text-emerald-300";
+          }
+          if (userAnswers[idx]?.selected === opt.id && opt.id !== q.correctOption) {
+            btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-rose-950/80 border-rose-500 text-rose-300";
+          }
+        } else {
+          btn.onclick = () => chooseAnswer(idx, opt.id, q.correctOption);
+        }
 
-    const optsContainer = document.createElement("div");
-    optsContainer.className = "space-y-1.5 mt-2";
+        optsContainer.appendChild(btn);
+      });
 
-    q.options.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.className = "w-full text-left p-3 rounded-xl border text-xs font-medium transition-all bg-slate-900 border-slate-800 text-slate-200 hover:border-emerald-500 hover:text-white cursor-pointer";
-      btn.innerText = `${opt.id}. ${opt.text}`;
+      qCard.appendChild(optsContainer);
 
       if (lockedQuestions[idx]) {
-        btn.disabled = true;
-        btn.classList.remove("cursor-pointer");
-        if (opt.id === q.correctOption) {
-          btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-emerald-950/80 border-emerald-500 text-emerald-300";
+        const feedback = document.createElement("div");
+        feedback.className = "absolute left-1/2 bottom-12 z-20 pointer-events-none transform -translate-x-1/2 px-4 py-2 bg-emerald-950/95 border border-emerald-500 text-emerald-200 text-xs font-extrabold rounded-full shadow-2xl backdrop-blur-md animate-fly-popup flex items-center gap-1.5 whitespace-nowrap";
+        feedback.innerText = userAnswers[idx].feedbackMsg;
+        qCard.appendChild(feedback);
+
+        if (q.explanation) {
+          const exp = document.createElement("div");
+          exp.className = "p-2.5 bg-slate-900 text-slate-300 text-xs rounded-lg border border-slate-800 mt-2 animate-float-in";
+          exp.innerHTML = `<strong class="text-emerald-400">Explanation:</strong> ${q.explanation}`;
+          qCard.appendChild(exp);
         }
-        if (userAnswers[idx]?.selected === opt.id && opt.id !== q.correctOption) {
-          btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-rose-950/80 border-rose-500 text-rose-300";
-        }
-      } else {
-        btn.onclick = () => chooseAnswer(idx, opt.id, q.correctOption);
       }
 
-      optsContainer.appendChild(btn);
-    });
+      container.appendChild(qCard);
 
-    qCard.appendChild(optsContainer);
+      const nextBtn = document.getElementById("nextBtn");
+      const submitBtn = document.getElementById("submitBtn");
+      const isAnswered = !!lockedQuestions[idx];
 
-    if (lockedQuestions[idx]) {
-      const feedback = document.createElement("div");
-      feedback.className = "absolute left-1/2 bottom-12 z-20 pointer-events-none transform -translate-x-1/2 px-4 py-2 bg-emerald-950/95 border border-emerald-500 text-emerald-200 text-xs font-extrabold rounded-full shadow-2xl backdrop-blur-md animate-fly-popup flex items-center gap-1.5 whitespace-nowrap";
-      feedback.innerText = userAnswers[idx].feedbackMsg;
-      qCard.appendChild(feedback);
-
-      if (q.explanation) {
-        const exp = document.createElement("div");
-        exp.className = "p-2.5 bg-slate-900 text-slate-300 text-xs rounded-lg border border-slate-800 mt-2 animate-float-in";
-        exp.innerHTML = `<strong class="text-emerald-400">Explanation:</strong> ${q.explanation}`;
-        qCard.appendChild(exp);
+      if (idx === activeQuestions.length - 1) {
+        nextBtn.classList.add("hidden");
+        submitBtn.classList.remove("hidden");
+        submitBtn.disabled = !isAnswered;
+        if (isAnswered) {
+          submitBtn.className = "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
+        } else {
+          submitBtn.className = "px-4 py-2 bg-slate-800 text-slate-500 font-extrabold text-xs rounded-xl transition-all opacity-50 cursor-not-allowed";
+        }
+      } else {
+        nextBtn.classList.remove("hidden");
+        submitBtn.classList.add("hidden");
+        nextBtn.disabled = !isAnswered;
+        if (isAnswered) {
+          nextBtn.className = "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
+        } else {
+          nextBtn.className = "px-4 py-2 bg-slate-800 text-slate-500 font-extrabold text-xs rounded-xl transition-all opacity-50 cursor-not-allowed";
+        }
       }
     }
 
-    container.appendChild(qCard);
-
-    const nextBtn = document.getElementById("nextBtn");
-    const submitBtn = document.getElementById("submitBtn");
-    const isAnswered = !!lockedQuestions[idx];
-
-    if (idx === activeQuestions.length - 1) {
-      nextBtn.classList.add("hidden");
-      submitBtn.classList.remove("hidden");
-      submitBtn.disabled = !isAnswered;
-      if (isAnswered) {
-        submitBtn.className = "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
-      } else {
-        submitBtn.className = "px-4 py-2 bg-slate-800 text-slate-500 font-extrabold text-xs rounded-xl transition-all opacity-50 cursor-not-allowed";
-      }
-    } else {
-      nextBtn.classList.remove("hidden");
-      submitBtn.classList.add("hidden");
-      nextBtn.disabled = !isAnswered;
-      if (isAnswered) {
-        nextBtn.className = "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
-      } else {
-        nextBtn.className = "px-4 py-2 bg-slate-800 text-slate-500 font-extrabold text-xs rounded-xl transition-all opacity-50 cursor-not-allowed";
+    function nextQuestion() {
+      if (currentQuestionIndex < activeQuestions.length - 1 && lockedQuestions[currentQuestionIndex]) {
+        currentQuestionIndex++;
+        renderQuizQuestions();
       }
     }
-  }
 
-  function nextQuestion() {
-    if (currentQuestionIndex < activeQuestions.length - 1 && lockedQuestions[currentQuestionIndex]) {
-      currentQuestionIndex++;
+    function chooseAnswer(qIdx, selectedOptId, correctOptId) {
+      if (lockedQuestions[qIdx]) return;
+
+      const isCorrect = selectedOptId === correctOptId;
+      const msgList = isCorrect ? PRAISE_MESSAGES : ENCOURAGEMENT_MESSAGES;
+      const feedbackMsg = msgList[Math.floor(Math.random() * msgList.length)];
+
+      userAnswers[qIdx] = { selected: selectedOptId, feedbackMsg };
+      lockedQuestions[qIdx] = true;
+
+      const answeredCount = Object.keys(lockedQuestions).length;
+      saveUnitProgress(activeQuiz.quizId, answeredCount, activeQuestions.length);
+
       renderQuizQuestions();
+      loadQuizIndex();
     }
-  }
 
-  function chooseAnswer(qIdx, selectedOptId, correctOptId) {
-    if (lockedQuestions[qIdx]) return;
+    async function submitQuiz() {
+      if (!lockedQuestions[currentQuestionIndex]) return;
 
-    const isCorrect = selectedOptId === correctOptId;
-    const msgList = isCorrect ? PRAISE_MESSAGES : ENCOURAGEMENT_MESSAGES;
-    const feedbackMsg = msgList[Math.floor(Math.random() * msgList.length)];
+      let scoreCount = 0;
+      activeQuestions.forEach((q, idx) => {
+        if (userAnswers[idx]?.selected === q.correctOption) scoreCount++;
+      });
 
-    userAnswers[qIdx] = { selected: selectedOptId, feedbackMsg };
-    lockedQuestions[qIdx] = true;
+      const percent = Math.round((scoreCount / activeQuestions.length) * 100);
 
-    const answeredCount = Object.keys(lockedQuestions).length;
-    saveUnitProgress(activeQuiz.quizId, answeredCount, activeQuestions.length);
+      alert(`Quiz Submitted!\nScore: ${percent}% (${scoreCount}/${activeQuestions.length} correct)`);
 
-    renderQuizQuestions();
-    loadQuizIndex();
-  }
-
-  async function submitQuiz() {
-    if (!lockedQuestions[currentQuestionIndex]) return;
-
-    let scoreCount = 0;
-    activeQuestions.forEach((q, idx) => {
-      if (userAnswers[idx]?.selected === q.correctOption) scoreCount++;
-    });
-
-    const percent = Math.round((scoreCount / activeQuestions.length) * 100);
-
-    alert(`Quiz Submitted!\nScore: ${percent}% (${scoreCount}/${activeQuestions.length} correct)`);
-
-    try {
       await fetch(GAS_API_URL, {
         method: "POST",
         body: JSON.stringify({
@@ -425,41 +649,22 @@
           isFirstTry100: percent === 100
         })
       });
-    } catch (e) {
-      console.error("Score logging delayed, background network retry active.");
-    }
 
-    closeQuizModal();
-    if (userRole === "teacher") {
-      loadTeacherData();
-    } else {
-      loadStudentStats();
-    }
-  }
-
-  function closeQuizModal() {
-    document.getElementById("quizModal").classList.add("hidden");
-  }
-
-  // AUTO-RESTORE SESSION ON PAGE RELOAD / RE-ENTRY (LocalStorage first, SessionStorage fallback)
-  window.onload = () => {
-    const savedSession = localStorage.getItem("lhs_user_session") || sessionStorage.getItem("lhs_user_session");
-    if (savedSession) {
-      try {
-        const user = JSON.parse(savedSession);
-        currentUser = user.email;
-        userRole = user.role;
-        userTitle = user.title;
-        userName = user.name;
-        commonName = user.commonName;
-        initPortalSession();
-        return;
-      } catch (e) {
-        localStorage.removeItem("lhs_user_session");
-        sessionStorage.removeItem("lhs_user_session");
+      closeQuizModal();
+      if (userRole === "teacher") {
+        loadTeacherData();
+      } else {
+        loadStudentStats();
       }
     }
-    
-    document.getElementById("loginModal").classList.remove("hidden");
-  };
-</script>
+
+    function closeQuizModal() {
+      document.getElementById("quizModal").classList.add("hidden");
+    }
+
+    window.onload = () => {
+      document.getElementById("loginModal").classList.remove("hidden");
+    };
+  </script>
+</body>
+</html>
