@@ -189,8 +189,14 @@
         <!-- Questions -->
       </div>
 
-      <div class="px-5 py-3 border-t border-slate-800 bg-slate-950 flex justify-end">
-        <button onclick="submitQuiz()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all">
+      <div class="px-5 py-3 border-t border-slate-800 bg-slate-950 flex justify-between items-center">
+        <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl transition-all cursor-pointer">
+          &larr; Previous
+        </button>
+        <button id="nextBtn" onclick="nextQuestion()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer">
+          Next Question &rarr;
+        </button>
+        <button id="submitBtn" onclick="submitQuiz()" class="hidden px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer">
           Submit Final Quiz Score
         </button>
       </div>
@@ -215,6 +221,7 @@
     let activeQuestions = [];
     let userAnswers = {};
     let lockedQuestions = {};
+    let currentQuestionIndex = 0;
 
     async function handleLoginSubmit(e) {
       e.preventDefault();
@@ -357,6 +364,7 @@
       activeQuiz = { sheetId, subject, title, quizId };
       userAnswers = {};
       lockedQuestions = {};
+      currentQuestionIndex = 0;
 
       document.getElementById("quizSubjectTag").innerText = subject;
       document.getElementById("quizModalTitle").innerText = title;
@@ -372,58 +380,105 @@
       const container = document.getElementById("quizQuestionBody");
       container.innerHTML = "";
 
-      activeQuestions.forEach((q, idx) => {
-        const qCard = document.createElement("div");
-        qCard.className = "p-4 border border-slate-800 rounded-xl space-y-2 bg-slate-950";
-        qCard.innerHTML = `<h4 class="text-sm font-bold text-white">Q${idx + 1}. ${q.question}</h4>`;
+      if (!activeQuestions || activeQuestions.length === 0) return;
 
-        if (q.imageUrl) {
-          qCard.innerHTML += `<img src="${q.imageUrl}" class="max-w-full rounded-lg my-2 border border-slate-800" />`;
-        }
+      const idx = currentQuestionIndex;
+      const q = activeQuestions[idx];
 
-        const optsContainer = document.createElement("div");
-        optsContainer.className = "space-y-1.5";
+      const qCard = document.createElement("div");
+      qCard.className = "p-4 border border-slate-800 rounded-xl space-y-2 bg-slate-950";
+      
+      const qHeader = document.createElement("div");
+      qHeader.className = "flex justify-between items-center mb-1";
+      qHeader.innerHTML = `
+        <span class="text-[11px] font-bold text-emerald-400">Question ${idx + 1} of ${activeQuestions.length}</span>
+      `;
+      qCard.appendChild(qHeader);
 
-        q.options.forEach(opt => {
-          const btn = document.createElement("button");
-          btn.className = "w-full text-left p-3 rounded-xl border text-xs font-medium transition-all bg-slate-900 border-slate-800 text-slate-200 hover:border-emerald-500 hover:text-white cursor-pointer";
-          btn.innerText = `${opt.id}. ${opt.text}`;
+      const qTitle = document.createElement("h4");
+      qTitle.className = "text-sm font-bold text-white";
+      qTitle.innerText = `Q${idx + 1}. ${q.question}`;
+      qCard.appendChild(qTitle);
 
-          if (lockedQuestions[idx]) {
-            btn.disabled = true;
-            btn.classList.remove("cursor-pointer");
-            if (opt.id === q.correctOption) {
-              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-emerald-950/80 border-emerald-500 text-emerald-300";
-            }
-            if (userAnswers[idx]?.selected === opt.id && opt.id !== q.correctOption) {
-              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-rose-950/80 border-rose-500 text-rose-300";
-            }
-          } else {
-            btn.onclick = () => chooseAnswer(idx, opt.id, q.correctOption);
-          }
+      if (q.imageUrl) {
+        qCard.innerHTML += `<img src="${q.imageUrl}" class="max-w-full rounded-lg my-2 border border-slate-800" />`;
+      }
 
-          optsContainer.appendChild(btn);
-        });
+      const optsContainer = document.createElement("div");
+      optsContainer.className = "space-y-1.5 mt-2";
 
-        qCard.appendChild(optsContainer);
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left p-3 rounded-xl border text-xs font-medium transition-all bg-slate-900 border-slate-800 text-slate-200 hover:border-emerald-500 hover:text-white cursor-pointer";
+        btn.innerText = `${opt.id}. ${opt.text}`;
 
         if (lockedQuestions[idx]) {
-          const isCorrect = userAnswers[idx].selected === q.correctOption;
-          const feedback = document.createElement("div");
-          feedback.className = `p-2.5 rounded-lg text-xs font-bold border mt-2 ${isCorrect ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : 'bg-rose-950/60 text-rose-300 border-rose-800'}`;
-          feedback.innerText = userAnswers[idx].feedbackMsg;
-          qCard.appendChild(feedback);
-
-          if (q.explanation) {
-            const exp = document.createElement("div");
-            exp.className = "p-2.5 bg-slate-900 text-slate-300 text-xs rounded-lg border border-slate-800 mt-2";
-            exp.innerHTML = `<strong class="text-emerald-400">Explanation:</strong> ${q.explanation}`;
-            qCard.appendChild(exp);
+          btn.disabled = true;
+          btn.classList.remove("cursor-pointer");
+          if (opt.id === q.correctOption) {
+            btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-emerald-950/80 border-emerald-500 text-emerald-300";
           }
+          if (userAnswers[idx]?.selected === opt.id && opt.id !== q.correctOption) {
+            btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-rose-950/80 border-rose-500 text-rose-300";
+          }
+        } else {
+          btn.onclick = () => chooseAnswer(idx, opt.id, q.correctOption);
         }
 
-        container.appendChild(qCard);
+        optsContainer.appendChild(btn);
       });
+
+      qCard.appendChild(optsContainer);
+
+      if (lockedQuestions[idx]) {
+        const isCorrect = userAnswers[idx].selected === q.correctOption;
+        const feedback = document.createElement("div");
+        feedback.className = `p-2.5 rounded-lg text-xs font-bold border mt-2 ${isCorrect ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : 'bg-rose-950/60 text-rose-300 border-rose-800'}`;
+        feedback.innerText = userAnswers[idx].feedbackMsg;
+        qCard.appendChild(feedback);
+
+        if (q.explanation) {
+          const exp = document.createElement("div");
+          exp.className = "p-2.5 bg-slate-900 text-slate-300 text-xs rounded-lg border border-slate-800 mt-2";
+          exp.innerHTML = `<strong class="text-emerald-400">Explanation:</strong> ${q.explanation}`;
+          qCard.appendChild(exp);
+        }
+      }
+
+      container.appendChild(qCard);
+
+      // Update Navigation Buttons
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const submitBtn = document.getElementById("submitBtn");
+
+      if (idx === 0) {
+        prevBtn.classList.add("opacity-50", "pointer-events-none");
+      } else {
+        prevBtn.classList.remove("opacity-50", "pointer-events-none");
+      }
+
+      if (idx === activeQuestions.length - 1) {
+        nextBtn.classList.add("hidden");
+        submitBtn.classList.remove("hidden");
+      } else {
+        nextBtn.classList.remove("hidden");
+        submitBtn.classList.add("hidden");
+      }
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < activeQuestions.length - 1) {
+        currentQuestionIndex++;
+        renderQuizQuestions();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuizQuestions();
+      }
     }
 
     function chooseAnswer(qIdx, selectedOptId, correctOptId) {
