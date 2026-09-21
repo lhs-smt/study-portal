@@ -59,7 +59,7 @@
     </div>
   </header>
 
-  <!-- LOGIN MODAL / OVERLAY -->
+  <!-- LOGIN MODAL / OVERLAY WITH REQUIRED PASSWORD -->
   <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
     <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
       <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white text-center">
@@ -201,7 +201,6 @@
 
   <!-- JAVASCRIPT API ROUTER -->
   <script>
-    // Updated Deployment API Endpoint
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec";
 
     const PRAISE_MESSAGES = ["Good job! 🌟", "You're so smart! 💡", "You're great at this! ✨", "Let's get them all! 🚀", "Wonderful! 🎈", "Amazing! 🎉", "That's right! 🙌"];
@@ -222,7 +221,10 @@
       const password = document.getElementById("passwordInput").value.trim();
       const loginBtn = document.getElementById("loginBtn");
 
-      if (!email || !password) return;
+      if (!email || !password) {
+        alert("Please enter both your email and password.");
+        return;
+      }
 
       loginBtn.innerText = "Verifying credentials...";
       loginBtn.disabled = true;
@@ -235,7 +237,7 @@
         const data = await res.json();
 
         if (!data.authenticated) {
-          alert(data.error || "Authentication failed.");
+          alert(data.error || "Authentication failed. Please check your credentials.");
           loginBtn.innerText = "Authenticate & Enter Portal →";
           loginBtn.disabled = false;
           return;
@@ -243,7 +245,7 @@
 
         currentUser = email;
         userRole = data.role;     // "teacher" or "student"
-        userTitle = data.title;   // Role / Title (e.g. Leading Teacher or Student)
+        userTitle = data.title;   // Role / Title from sheet
         userName = data.name;     // Name from sheet
 
         document.getElementById("loginModal").classList.add("hidden");
