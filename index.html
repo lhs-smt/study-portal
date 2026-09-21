@@ -506,21 +506,34 @@
 
       container.appendChild(qCard);
 
-      // Update Navigation Buttons
+      // Update Navigation Buttons (Disabled until current question is answered)
       const nextBtn = document.getElementById("nextBtn");
       const submitBtn = document.getElementById("submitBtn");
+      const isAnswered = !!lockedQuestions[idx];
 
       if (idx === activeQuestions.length - 1) {
         nextBtn.classList.add("hidden");
         submitBtn.classList.remove("hidden");
+        submitBtn.disabled = !isAnswered;
+        if (isAnswered) {
+          submitBtn.className = "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
+        } else {
+          submitBtn.className = "px-4 py-2 bg-slate-800 text-slate-500 font-extrabold text-xs rounded-xl transition-all opacity-50 cursor-not-allowed";
+        }
       } else {
         nextBtn.classList.remove("hidden");
         submitBtn.classList.add("hidden");
+        nextBtn.disabled = !isAnswered;
+        if (isAnswered) {
+          nextBtn.className = "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
+        } else {
+          nextBtn.className = "px-4 py-2 bg-slate-800 text-slate-500 font-extrabold text-xs rounded-xl transition-all opacity-50 cursor-not-allowed";
+        }
       }
     }
 
     function nextQuestion() {
-      if (currentQuestionIndex < activeQuestions.length - 1) {
+      if (currentQuestionIndex < activeQuestions.length - 1 && lockedQuestions[currentQuestionIndex]) {
         currentQuestionIndex++;
         renderQuizQuestions();
       }
@@ -539,6 +552,8 @@
     }
 
     async function submitQuiz() {
+      if (!lockedQuestions[currentQuestionIndex]) return;
+
       let scoreCount = 0;
       activeQuestions.forEach((q, idx) => {
         if (userAnswers[idx]?.selected === q.correctOption) scoreCount++;
