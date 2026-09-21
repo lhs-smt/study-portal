@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,6 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
@@ -21,28 +22,28 @@
   </script>
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03); }
-    .card-shadow:hover { box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 10px -2px rgba(0, 0, 0, 0.04); }
+    .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5); }
+    .card-shadow:hover { box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.15); }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen antialiased flex flex-col">
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col">
 
   <!-- TOP NAVBAR -->
-  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+  <header class="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <!-- SCHOOL LOGO -->
         <img 
           src="logo.png" 
           alt="L. Hithadhoo School Logo" 
-          class="h-10 w-10 object-contain rounded-xl"
+          class="h-10 w-10 object-contain rounded-xl bg-slate-800 border border-slate-700 p-0.5"
           onerror="this.onerror=null; this.outerHTML='<div class=\'h-10 w-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm\'>LHS</div>';"
         />
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-bold text-slate-900 text-lg sm:text-xl tracking-tight">L. Hithadhoo School</span>
+            <span class="font-bold text-white text-lg sm:text-xl tracking-tight">L. Hithadhoo School</span>
           </div>
-          <p class="text-[11px] font-medium text-slate-500 hidden sm:block">Studyspace</p>
+          <p class="text-[11px] font-medium text-emerald-400 hidden sm:block">Studyspace</p>
         </div>
       </div>
 
@@ -55,11 +56,11 @@
   </header>
 
   <!-- LOGIN MODAL -->
-  <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-      <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white text-center">
+  <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-700 to-teal-800 p-6 text-white text-center border-b border-emerald-600/30">
         <!-- SCHOOL LOGO ON LOGIN MODAL -->
-        <div class="inline-flex h-14 w-14 rounded-2xl bg-white/90 p-2 items-center justify-center mb-3 shadow-md">
+        <div class="inline-flex h-14 w-14 rounded-2xl bg-white p-2 items-center justify-center mb-3 shadow-lg">
           <img 
             src="logo.png" 
             alt="L. Hithadhoo School Logo" 
@@ -67,37 +68,37 @@
             onerror="this.onerror=null; this.outerHTML='<span class=\'text-2xl\'>🎓</span>';"
           />
         </div>
-        <h2 class="text-2xl font-extrabold tracking-tight">L. Hithadhoo School</h2>
-        <p class="text-xs font-medium text-emerald-100 mt-1">Studyspace</p>
+        <h2 class="text-2xl font-extrabold tracking-tight text-white">L. Hithadhoo School</h2>
+        <p class="text-xs font-semibold text-emerald-200 mt-1">Studyspace</p>
       </div>
 
       <form id="loginForm" class="p-6 space-y-4" onsubmit="handleLoginSubmit(event)">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">School Email Address</label>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">School Email Address</label>
           <input 
             type="email" 
             id="emailInput" 
             required 
             placeholder="name@lhithadhooschool.edu.mv"
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 outline-none"
+            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
           />
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Account Password</label>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Account Password</label>
           <input 
             type="password" 
             id="passwordInput" 
             required 
             placeholder="••••••••"
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 outline-none"
+            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
           />
         </div>
 
         <button 
           type="submit" 
           id="loginBtn"
-          class="w-full py-2.5 rounded-xl font-semibold text-xs text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all"
+          class="w-full py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-emerald-400 hover:bg-emerald-300 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
         >
           Authenticate &amp; Enter Portal &rarr;
         </button>
@@ -110,42 +111,42 @@
 
     <!-- DASHBOARD -->
     <section id="dashboardSection" class="space-y-5">
-      <!-- School Banner (Replaced Faculty View with School View) -->
-      <div id="teacherBanner" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
+      <!-- School Banner -->
+      <div id="teacherBanner" class="hidden p-4 rounded-2xl bg-amber-950/40 border border-amber-600/50 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <span class="h-9 w-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">SMT</span>
+          <span class="h-9 w-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-extrabold text-sm">SMT</span>
           <div>
-            <div class="text-xs font-bold text-amber-900">School View Active</div>
-            <div class="text-[11px] text-amber-700">Displaying aggregate student attempts and performance records</div>
+            <div class="text-xs font-bold text-amber-300">School View Active</div>
+            <div class="text-[11px] text-amber-200/80">Displaying aggregate student attempts and performance records</div>
           </div>
         </div>
       </div>
 
       <!-- Student Stats -->
       <div id="studentStatsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
-          <div class="text-slate-500 text-xs font-semibold mb-2">BEST RECORDED SCORE</div>
-          <div id="statAvgScore" class="text-3xl font-extrabold text-slate-900">0%</div>
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
+          <div class="text-slate-400 text-xs font-bold mb-2">BEST RECORDED SCORE</div>
+          <div id="statAvgScore" class="text-3xl font-extrabold text-emerald-400">0%</div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
-          <div class="text-slate-500 text-xs font-semibold mb-2">FIRST-TRY 100s</div>
-          <div id="statFirstTry" class="text-3xl font-extrabold text-slate-900">0</div>
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
+          <div class="text-slate-400 text-xs font-bold mb-2">FIRST-TRY 100s</div>
+          <div id="statFirstTry" class="text-3xl font-extrabold text-white">0</div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
-          <div class="text-slate-500 text-xs font-semibold mb-2">TOTAL ATTEMPTS LOGGED</div>
-          <div id="statAttempts" class="text-3xl font-extrabold text-slate-900">0</div>
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
+          <div class="text-slate-400 text-xs font-bold mb-2">TOTAL ATTEMPTS LOGGED</div>
+          <div id="statAttempts" class="text-3xl font-extrabold text-white">0</div>
         </div>
       </div>
 
       <!-- Teacher Table -->
-      <div id="teacherTableContainer" class="hidden bg-white rounded-2xl border border-slate-200 p-5 card-shadow">
-        <h3 class="text-base font-bold text-slate-900 mb-3">Student Performance Overview</h3>
+      <div id="teacherTableContainer" class="hidden bg-slate-900 rounded-2xl border border-slate-800 p-5 card-shadow">
+        <h3 class="text-base font-bold text-white mb-3">Student Performance Overview</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
-              <tr class="border-b border-slate-200 bg-slate-50 text-slate-500">
+              <tr class="border-b border-slate-800 bg-slate-950 text-slate-400">
                 <th class="p-3">Student Email</th>
                 <th class="p-3">Total Attempts</th>
                 <th class="p-3">First-Try 100s</th>
@@ -153,7 +154,7 @@
               </tr>
             </thead>
             <tbody id="teacherTableBody">
-              <tr><td colspan="4" class="p-3 text-slate-400">Loading student records...</td></tr>
+              <tr><td colspan="4" class="p-3 text-slate-500">Loading student records...</td></tr>
             </tbody>
           </table>
         </div>
@@ -163,40 +164,40 @@
     <!-- QUIZ SELECTOR -->
     <section class="space-y-4">
       <div>
-        <h2 class="text-xl font-bold text-slate-900">Available Practice Units</h2>
-        <p class="text-xs text-slate-500">Select any syllabus unit to take an interactive quiz</p>
+        <h2 class="text-xl font-bold text-white">Available Practice Units</h2>
+        <p class="text-xs text-slate-400">Select any syllabus unit to take an interactive quiz</p>
       </div>
 
       <div id="quizCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="text-xs text-slate-400">Loading published units...</div>
+        <div class="text-xs text-slate-500">Loading published units...</div>
       </div>
     </section>
   </main>
 
   <!-- QUIZ MODAL -->
-  <div id="quizModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-    <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+  <div id="quizModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="w-full max-w-xl bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
         <div>
-          <span id="quizSubjectTag" class="px-2.5 py-0.5 text-[10px] font-bold rounded bg-emerald-100 text-emerald-800">Subject</span>
-          <h3 id="quizModalTitle" class="text-base font-bold text-slate-900 mt-1">Unit Quiz</h3>
+          <span id="quizSubjectTag" class="px-2.5 py-0.5 text-[10px] font-bold rounded bg-emerald-950 text-emerald-300 border border-emerald-800/50">Subject</span>
+          <h3 id="quizModalTitle" class="text-base font-bold text-white mt-1">Unit Quiz</h3>
         </div>
-        <button onclick="closeQuizModal()" class="text-slate-400 hover:text-slate-700 text-xl font-bold">&times;</button>
+        <button onclick="closeQuizModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
       </div>
 
       <div id="quizQuestionBody" class="p-6 overflow-y-auto space-y-4 flex-1">
         <!-- Questions -->
       </div>
 
-      <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 flex justify-end">
-        <button onclick="submitQuiz()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl">
+      <div class="px-5 py-3 border-t border-slate-800 bg-slate-950 flex justify-end">
+        <button onclick="submitQuiz()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all">
           Submit Final Quiz Score
         </button>
       </div>
     </div>
   </div>
 
-  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
+  <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
     L. Hithadhoo School - Studyspace &copy; 2026
   </footer>
 
@@ -276,8 +277,8 @@
       const tag = document.getElementById("userProfileTag");
       tag.innerHTML = `
         <div class="text-right">
-          <div class="text-xs font-bold text-slate-800">${userName || currentUser}</div>
-          <div class="text-[10px] font-semibold uppercase ${userRole === 'teacher' ? 'text-amber-600' : 'text-emerald-600'}">${userTitle || userRole}</div>
+          <div class="text-xs font-bold text-white">${userName || currentUser}</div>
+          <div class="text-[10px] font-semibold uppercase ${userRole === 'teacher' ? 'text-amber-400' : 'text-emerald-400'}">${userTitle || userRole}</div>
         </div>
       `;
     }
@@ -304,17 +305,17 @@
         tbody.innerHTML = "";
 
         if (!data || data.length === 0) {
-          tbody.innerHTML = "<tr><td colspan='4' class='p-3 text-slate-400'>No student records recorded yet.</td></tr>";
+          tbody.innerHTML = "<tr><td colspan='4' class='p-3 text-slate-500'>No student records recorded yet.</td></tr>";
           return;
         }
 
         data.forEach(r => {
           tbody.innerHTML += `
-            <tr class="border-b border-slate-100">
-              <td class="p-3 font-semibold text-slate-800">${r.email}</td>
-              <td class="p-3">${r.attemptsCount}</td>
-              <td class="p-3">🏅 ${r.firstTry100s}</td>
-              <td class="p-3 font-bold text-emerald-600">${r.bestScore}%</td>
+            <tr class="border-b border-slate-800/60">
+              <td class="p-3 font-semibold text-slate-200">${r.email}</td>
+              <td class="p-3 text-slate-300">${r.attemptsCount}</td>
+              <td class="p-3 text-amber-300">🏅 ${r.firstTry100s}</td>
+              <td class="p-3 font-bold text-emerald-400">${r.bestScore}%</td>
             </tr>
           `;
         });
@@ -329,26 +330,26 @@
         grid.innerHTML = "";
 
         if (!list || list.length === 0) {
-          grid.innerHTML = "<div class='text-xs text-slate-400'>No published quizzes found in Quiz_Index.</div>";
+          grid.innerHTML = "<div class='text-xs text-slate-500'>No published quizzes found in Quiz_Index.</div>";
           return;
         }
 
         list.forEach(q => {
           grid.innerHTML += `
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 card-shadow flex flex-col justify-between">
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 card-shadow flex flex-col justify-between">
               <div>
-                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700">${q.subject}</span>
-                <h3 class="font-bold text-slate-900 text-base mt-2">${q.unit}</h3>
-                <p class="text-xs text-slate-500 mb-4">${q.title}</p>
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-800 text-emerald-400 border border-slate-700/50">${q.subject}</span>
+                <h3 class="font-bold text-white text-base mt-2">${q.unit}</h3>
+                <p class="text-xs text-slate-400 mb-4">${q.title}</p>
               </div>
-              <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.title}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
+              <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.title}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all cursor-pointer">
                 Start Unit Quiz &rarr;
               </button>
             </div>
           `;
         });
       } catch (e) {
-        grid.innerHTML = "<div class='text-xs text-rose-500'>Error loading quiz index.</div>";
+        grid.innerHTML = "<div class='text-xs text-rose-400'>Error loading quiz index.</div>";
       }
     }
 
@@ -359,7 +360,7 @@
 
       document.getElementById("quizSubjectTag").innerText = subject;
       document.getElementById("quizModalTitle").innerText = title;
-      document.getElementById("quizQuestionBody").innerHTML = "<div class='text-xs text-slate-400'>Loading questions...</div>";
+      document.getElementById("quizQuestionBody").innerHTML = "<div class='text-xs text-slate-500'>Loading questions...</div>";
       document.getElementById("quizModal").classList.remove("hidden");
 
       const res = await fetch(`${GAS_API_URL}?action=getQuiz&sheetId=${sheetId}`);
@@ -373,11 +374,11 @@
 
       activeQuestions.forEach((q, idx) => {
         const qCard = document.createElement("div");
-        qCard.className = "p-4 border border-slate-200 rounded-xl space-y-2 bg-slate-50";
-        qCard.innerHTML = `<h4 class="text-sm font-bold text-slate-900">Q${idx + 1}. ${q.question}</h4>`;
+        qCard.className = "p-4 border border-slate-800 rounded-xl space-y-2 bg-slate-950";
+        qCard.innerHTML = `<h4 class="text-sm font-bold text-white">Q${idx + 1}. ${q.question}</h4>`;
 
         if (q.imageUrl) {
-          qCard.innerHTML += `<img src="${q.imageUrl}" class="max-w-full rounded-lg my-2" />`;
+          qCard.innerHTML += `<img src="${q.imageUrl}" class="max-w-full rounded-lg my-2 border border-slate-800" />`;
         }
 
         const optsContainer = document.createElement("div");
@@ -385,16 +386,17 @@
 
         q.options.forEach(opt => {
           const btn = document.createElement("button");
-          btn.className = "w-full text-left p-3 rounded-xl border text-xs font-medium transition-all bg-white border-slate-200 hover:border-emerald-500";
+          btn.className = "w-full text-left p-3 rounded-xl border text-xs font-medium transition-all bg-slate-900 border-slate-800 text-slate-200 hover:border-emerald-500 hover:text-white cursor-pointer";
           btn.innerText = `${opt.id}. ${opt.text}`;
 
           if (lockedQuestions[idx]) {
             btn.disabled = true;
+            btn.classList.remove("cursor-pointer");
             if (opt.id === q.correctOption) {
-              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-emerald-100 border-emerald-300 text-emerald-900";
+              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-emerald-950/80 border-emerald-500 text-emerald-300";
             }
             if (userAnswers[idx]?.selected === opt.id && opt.id !== q.correctOption) {
-              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-rose-100 border-rose-300 text-rose-900";
+              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-rose-950/80 border-rose-500 text-rose-300";
             }
           } else {
             btn.onclick = () => chooseAnswer(idx, opt.id, q.correctOption);
@@ -408,14 +410,14 @@
         if (lockedQuestions[idx]) {
           const isCorrect = userAnswers[idx].selected === q.correctOption;
           const feedback = document.createElement("div");
-          feedback.className = `p-2.5 rounded-lg text-xs font-bold border mt-2 ${isCorrect ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-rose-100 text-rose-900 border-rose-300'}`;
+          feedback.className = `p-2.5 rounded-lg text-xs font-bold border mt-2 ${isCorrect ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : 'bg-rose-950/60 text-rose-300 border-rose-800'}`;
           feedback.innerText = userAnswers[idx].feedbackMsg;
           qCard.appendChild(feedback);
 
           if (q.explanation) {
             const exp = document.createElement("div");
-            exp.className = "p-2.5 bg-slate-100 text-slate-700 text-xs rounded-lg border border-slate-200 mt-2";
-            exp.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
+            exp.className = "p-2.5 bg-slate-900 text-slate-300 text-xs rounded-lg border border-slate-800 mt-2";
+            exp.innerHTML = `<strong class="text-emerald-400">Explanation:</strong> ${q.explanation}`;
             qCard.appendChild(exp);
           }
         }
