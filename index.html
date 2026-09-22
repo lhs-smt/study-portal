@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>L. Hithadhoo School - Studyspace</title>
+  <title>L. Hithadhoo School - Studyspace Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
     .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5); }
     .card-shadow:hover { box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.15); }
 
-    /* Independent Popup: Fly in from below -> pause -> fly up & away */
+    /* Interactive Feedback Badge Animation */
     @keyframes flyInAndAway {
       0% {
         opacity: 0;
@@ -77,19 +77,19 @@
           src="logo.png" 
           alt="L. Hithadhoo School Logo" 
           class="h-10 w-10 object-contain rounded-xl bg-slate-800 border border-slate-700 p-0.5"
-          onerror="this.onerror=null; this.outerHTML='<div class=\'h-10 w-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm\'>LHS</div>';"
+          onerror="this.onerror=null; this.outerHTML='<div class=\'h-10 w-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-inner\'>LHS</div>';"
         />
         <div>
           <div class="flex items-center gap-2">
             <span class="font-bold text-white text-lg sm:text-xl tracking-tight">L. Hithadhoo School</span>
           </div>
-          <p class="text-[11px] font-medium text-emerald-400 hidden sm:block">Studyspace</p>
+          <p class="text-[11px] font-semibold text-emerald-400 hidden sm:block tracking-wide">Studyspace Portal</p>
         </div>
       </div>
 
       <div id="navUserSection" class="flex items-center gap-3">
         <div id="userProfileTag" class="flex items-center gap-2">
-          <!-- Populated dynamically -->
+          <!-- Populated dynamically upon login -->
         </div>
       </div>
     </div>
@@ -99,7 +99,6 @@
   <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
     <div class="w-full max-w-md bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden">
       <div class="bg-gradient-to-r from-emerald-700 to-teal-800 p-6 text-white text-center border-b border-emerald-600/30">
-        <!-- SCHOOL LOGO ON LOGIN MODAL -->
         <div class="inline-flex h-14 w-14 rounded-2xl bg-white p-2 items-center justify-center mb-3 shadow-lg">
           <img 
             src="logo.png" 
@@ -109,7 +108,7 @@
           />
         </div>
         <h2 class="text-2xl font-extrabold tracking-tight text-white">L. Hithadhoo School</h2>
-        <p class="text-xs font-semibold text-emerald-200 mt-1">Studyspace</p>
+        <p class="text-xs font-semibold text-emerald-200 mt-1 uppercase tracking-wider">Studyspace Portal</p>
       </div>
 
       <form id="loginForm" class="p-6 space-y-4" onsubmit="handleLoginSubmit(event)">
@@ -120,7 +119,7 @@
             id="emailInput" 
             required 
             placeholder="name@lhithadhooschool.edu.mv"
-            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
           />
         </div>
 
@@ -131,7 +130,7 @@
             id="passwordInput" 
             required 
             placeholder="••••••••"
-            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
           />
         </div>
 
@@ -146,8 +145,8 @@
     </div>
   </div>
 
-  <!-- MAIN CONTENT -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-8">
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-8 w-full">
 
     <!-- WELCOME BOARD -->
     <div id="welcomeBoard" class="bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-900 p-6 rounded-2xl border border-emerald-800/40 card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -155,49 +154,49 @@
         <h2 id="welcomeTitle" class="text-2xl font-extrabold text-white tracking-tight">Welcome!</h2>
         <p id="motivationalQuote" class="text-xs font-medium text-emerald-400/90 mt-1 italic">"Success is the sum of small efforts, repeated day in and day out."</p>
       </div>
-      <div class="px-3 py-1.5 rounded-xl bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 text-xs font-bold w-max">
-        🚀 Keep practicing &amp; reach your goals!
+      <div class="px-3.5 py-2 rounded-xl bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 text-xs font-bold w-max flex items-center gap-2">
+        <span>🚀</span> Keep practicing &amp; reach your goals!
       </div>
     </div>
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD SECTION -->
     <section id="dashboardSection" class="space-y-5">
-      <!-- School Banner -->
+      <!-- Teacher / SMT View Banner -->
       <div id="teacherBanner" class="hidden p-4 rounded-2xl bg-amber-950/40 border border-amber-600/50 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <span class="h-9 w-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-extrabold text-sm">SMT</span>
+          <span class="h-9 w-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-extrabold text-sm shadow-md">SMT</span>
           <div>
-            <div class="text-xs font-bold text-amber-300">School View Active</div>
-            <div class="text-[11px] text-amber-200/80">Displaying aggregate student attempts and performance records</div>
+            <div class="text-xs font-bold text-amber-300">Teacher / SMT View Active</div>
+            <div class="text-[11px] text-amber-200/80">Displaying aggregate student attempts and performance records from Database</div>
           </div>
         </div>
       </div>
 
-      <!-- Student Stats -->
+      <!-- Student View Stats Grid -->
       <div id="studentStatsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
-          <div class="text-slate-400 text-xs font-bold mb-2">BEST RECORDED SCORE</div>
+          <div class="text-slate-400 text-xs font-bold mb-2 uppercase tracking-wider">Best Recorded Score</div>
           <div id="statAvgScore" class="text-3xl font-extrabold text-emerald-400">0%</div>
         </div>
 
         <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
-          <div class="text-slate-400 text-xs font-bold mb-2">FIRST-TRY 100s</div>
+          <div class="text-slate-400 text-xs font-bold mb-2 uppercase tracking-wider">First-Try 100s</div>
           <div id="statFirstTry" class="text-3xl font-extrabold text-white">0</div>
         </div>
 
         <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 card-shadow">
-          <div class="text-slate-400 text-xs font-bold mb-2">TOTAL ATTEMPTS LOGGED</div>
+          <div class="text-slate-400 text-xs font-bold mb-2 uppercase tracking-wider">Total Attempts Logged</div>
           <div id="statAttempts" class="text-3xl font-extrabold text-white">0</div>
         </div>
       </div>
 
-      <!-- Teacher Table -->
+      <!-- Teacher View: Student Performance Overview Table -->
       <div id="teacherTableContainer" class="hidden bg-slate-900 rounded-2xl border border-slate-800 p-5 card-shadow">
         <h3 class="text-base font-bold text-white mb-3">Student Performance Overview</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
-              <tr class="border-b border-slate-800 bg-slate-950 text-slate-400">
+              <tr class="border-b border-slate-800 bg-slate-950 text-slate-400 uppercase tracking-wider">
                 <th class="p-3">Student Name</th>
                 <th class="p-3">Total Attempts</th>
                 <th class="p-3">First-Try 100%</th>
@@ -212,7 +211,7 @@
       </div>
     </section>
 
-    <!-- QUIZ SELECTOR -->
+    <!-- LET'S PRACTICE QUIZ SECTION -->
     <section class="space-y-4">
       <div class="flex items-center justify-between">
         <div>
@@ -230,7 +229,7 @@
     </section>
   </main>
 
-  <!-- QUIZ MODAL -->
+  <!-- INTERACTIVE QUIZ MODAL -->
   <div id="quizModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
     <div class="w-full max-w-xl bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden flex flex-col max-h-[90vh]">
       <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
@@ -238,11 +237,11 @@
           <span id="quizSubjectTag" class="px-2.5 py-0.5 text-[10px] font-bold rounded bg-emerald-950 text-emerald-300 border border-emerald-800/50">Subject</span>
           <h3 id="quizModalTitle" class="text-base font-bold text-white mt-1">Unit Quiz</h3>
         </div>
-        <button onclick="closeQuizModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+        <button onclick="closeQuizModal()" class="text-slate-400 hover:text-white text-xl font-bold p-1">&times;</button>
       </div>
 
       <div id="quizQuestionBody" class="p-6 overflow-y-auto space-y-4 flex-1 relative">
-        <!-- Questions -->
+        <!-- Interactive Question Content rendered dynamically -->
       </div>
 
       <div class="px-5 py-3 border-t border-slate-800 bg-slate-950 flex justify-end items-center">
@@ -257,10 +256,11 @@
   </div>
 
   <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-    L. Hithadhoo School - Studyspace &copy; 2026
+    L. Hithadhoo School - Studyspace Portal &copy; 2026
   </footer>
 
   <script>
+    // Configured Google Apps Script Backend API Endpoint
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxO5GiDkOOv2nu0Ic1ARDyzZVgi9fjGhvhyLWMvtKn9qCO1Kt8oEInzDdVva1RD9mUL/exec";
 
     const PRAISE_MESSAGES = ["Good job! 🌟", "You're so smart! 💡", "You're great at this! ✨", "Let's get them all! 🚀", "Wonderful! 🎈", "Amazing! 🎉", "That's right! 🙌"];
@@ -336,18 +336,15 @@
         userTitle = data.title;   
         userName = data.name || "";     
 
-        // Strictly capture Column D (commonName)
         if (data.commonName) {
           commonName = data.commonName;
         } else if (data.name) {
-          // Fallback parsing if backend hasn't re-deployed yet
           const nameParts = data.name.trim().split(" ");
           commonName = nameParts.length > 1 ? nameParts[1] : nameParts[0];
         } else {
           commonName = "Student";
         }
 
-        // PERSIST USER SESSION TO LOCALSTORAGE
         localStorage.setItem("lhs_user_session", JSON.stringify({
           email: currentUser,
           role: userRole,
@@ -396,7 +393,6 @@
         </button>
       `;
 
-      // Render Common Name in Welcome Board
       document.getElementById("welcomeTitle").innerText = `Welcome ${commonName}!`;
       const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
       document.getElementById("motivationalQuote").innerText = randomQuote;
@@ -418,25 +414,19 @@
           document.getElementById("statFirstTry").innerText = stat.firstTry100s;
           document.getElementById("statAttempts").innerText = stat.attemptsCount;
         }
-      } catch (e) { console.error(e); }
-    }
-
-    function formatStudentDisplayName(item) {
-      if (item.commonName && item.commonName.trim() !== "") return item.commonName;
-      if (item.name && item.name.trim() !== "") return item.name;
-      if (item.email) {
-        const prefix = item.email.split("@")[0];
-        // Capitalize student prefix format (e.g., s01108 -> Student s01108)
-        return prefix.startsWith("s") ? `Student (${prefix})` : prefix;
+      } catch (e) { 
+        console.error(e); 
       }
-      return "Student";
     }
 
     async function loadTeacherData() {
       try {
+        const tbody = document.getElementById("teacherTableBody");
+        tbody.innerHTML = "<tr><td colspan='4' class='p-3 text-slate-500'>Loading student records...</td></tr>";
+
         const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
         const data = await res.json();
-        const tbody = document.getElementById("teacherTableBody");
+
         tbody.innerHTML = "";
 
         if (!data || data.length === 0) {
@@ -445,9 +435,11 @@
         }
 
         data.forEach(r => {
-          const displayName = formatStudentDisplayName(r);
+          // Priority: commonName from Students sheet Column D -> name -> fallback email
+          const displayName = r.commonName || r.name || r.email;
+
           tbody.innerHTML += `
-            <tr class="border-b border-slate-800/60">
+            <tr class="border-b border-slate-800/60 hover:bg-slate-900/50">
               <td class="p-3 font-semibold text-slate-200">${displayName}</td>
               <td class="p-3 text-slate-300">${r.attemptsCount}</td>
               <td class="p-3 text-amber-300">🏅 ${r.firstTry100s}</td>
@@ -455,7 +447,9 @@
             </tr>
           `;
         });
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     async function refreshUnits() {
@@ -541,7 +535,10 @@
       const container = document.getElementById("quizQuestionBody");
       container.innerHTML = "";
 
-      if (!activeQuestions || activeQuestions.length === 0) return;
+      if (!activeQuestions || activeQuestions.length === 0) {
+        container.innerHTML = "<div class='text-xs text-slate-400'>No questions found for this quiz.</div>";
+        return;
+      }
 
       const idx = currentQuestionIndex;
       const q = activeQuestions[idx];
@@ -636,7 +633,7 @@
         }
       } else {
         nextBtn.classList.remove("hidden");
-        submitBtn.add("hidden");
+        submitBtn.classList.add("hidden");
         nextBtn.disabled = !isAnswered;
         if (isAnswered) {
           nextBtn.className = "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
