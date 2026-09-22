@@ -198,9 +198,9 @@
           <table class="w-full text-left text-xs">
             <thead>
               <tr class="border-b border-slate-800 bg-slate-950 text-slate-400">
-                <th class="p-3">Student Name</th>
+                <th class="p-3">Student Email</th>
                 <th class="p-3">Total Attempts</th>
-                <th class="p-3">First-Try 100%</th>
+                <th class="p-3">First-Try 100s</th>
                 <th class="p-3">Highest Score</th>
               </tr>
             </thead>
@@ -336,15 +336,18 @@
         userTitle = data.title;   
         userName = data.name || "";     
 
+        // Strictly capture Column D (commonName)
         if (data.commonName) {
           commonName = data.commonName;
         } else if (data.name) {
+          // Fallback parsing if backend hasn't re-deployed yet
           const nameParts = data.name.trim().split(" ");
           commonName = nameParts.length > 1 ? nameParts[1] : nameParts[0];
         } else {
           commonName = "Student";
         }
 
+        // PERSIST USER SESSION TO LOCALSTORAGE
         localStorage.setItem("lhs_user_session", JSON.stringify({
           email: currentUser,
           role: userRole,
@@ -393,6 +396,7 @@
         </button>
       `;
 
+      // Render Common Name in Welcome Board
       document.getElementById("welcomeTitle").innerText = `Welcome ${commonName}!`;
       const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
       document.getElementById("motivationalQuote").innerText = randomQuote;
@@ -419,12 +423,9 @@
 
     async function loadTeacherData() {
       try {
-        const tbody = document.getElementById("teacherTableBody");
-        tbody.innerHTML = "<tr><td colspan='4' class='p-3 text-slate-500'>Loading student records...</td></tr>";
-
         const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
         const data = await res.json();
-
+        const tbody = document.getElementById("teacherTableBody");
         tbody.innerHTML = "";
 
         if (!data || data.length === 0) {
@@ -433,20 +434,16 @@
         }
 
         data.forEach(r => {
-          const displayName = r.commonName || r.name || r.email;
-
           tbody.innerHTML += `
             <tr class="border-b border-slate-800/60">
-              <td class="p-3 font-semibold text-slate-200">${displayName}</td>
+              <td class="p-3 font-semibold text-slate-200">${r.email}</td>
               <td class="p-3 text-slate-300">${r.attemptsCount}</td>
               <td class="p-3 text-amber-300">🏅 ${r.firstTry100s}</td>
               <td class="p-3 font-bold text-emerald-400">${r.bestScore}%</td>
             </tr>
           `;
         });
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) { console.error(e); }
     }
 
     async function refreshUnits() {
@@ -472,9 +469,9 @@
           grid.innerHTML += `
             <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 card-shadow flex flex-col justify-between">
               <div>
-                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-800 text-emerald-400 border border-slate-700/50">${q.subject || 'Economics'}</span>
-                <h3 class="font-bold text-white text-base mt-2">${q.unit || ''}</h3>
-                <p class="text-xs text-slate-400 mb-3">${q.unitTitle || q.title || ''}</p>
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-800 text-emerald-400 border border-slate-700/50">${q.subject}</span>
+                <h3 class="font-bold text-white text-base mt-2">${q.unit}</h3>
+                <p class="text-xs text-slate-400 mb-3">${q.title}</p>
                 
                 <!-- Unit Card Progress Bar -->
                 <div class="mb-4">
@@ -488,7 +485,7 @@
                 </div>
               </div>
 
-              <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.unitTitle || q.title || ''}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all cursor-pointer">
+              <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.title}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all cursor-pointer">
                 ${prog.answered > 0 ? 'Continue Unit Quiz &rarr;' : 'Start Unit Quiz &rarr;'}
               </button>
             </div>
