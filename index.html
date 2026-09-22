@@ -421,6 +421,17 @@
       } catch (e) { console.error(e); }
     }
 
+    function formatStudentDisplayName(item) {
+      if (item.commonName && item.commonName.trim() !== "") return item.commonName;
+      if (item.name && item.name.trim() !== "") return item.name;
+      if (item.email) {
+        const prefix = item.email.split("@")[0];
+        // Capitalize student prefix format (e.g., s01108 -> Student s01108)
+        return prefix.startsWith("s") ? `Student (${prefix})` : prefix;
+      }
+      return "Student";
+    }
+
     async function loadTeacherData() {
       try {
         const res = await fetch(`${GAS_API_URL}?action=getLeaderboard`);
@@ -434,7 +445,7 @@
         }
 
         data.forEach(r => {
-          const displayName = r.commonName || r.name || r.email;
+          const displayName = formatStudentDisplayName(r);
           tbody.innerHTML += `
             <tr class="border-b border-slate-800/60">
               <td class="p-3 font-semibold text-slate-200">${displayName}</td>
@@ -625,7 +636,7 @@
         }
       } else {
         nextBtn.classList.remove("hidden");
-        submitBtn.classList.add("hidden");
+        submitBtn.add("hidden");
         nextBtn.disabled = !isAnswered;
         if (isAnswered) {
           nextBtn.className = "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
