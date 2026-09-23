@@ -247,7 +247,13 @@
           <span id="quizSubjectTag" class="px-2.5 py-0.5 text-[10px] font-bold rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/50">Subject</span>
           <h3 id="quizModalTitle" class="text-base font-bold text-slate-900 dark:text-white mt-1">Unit Quiz</h3>
         </div>
-        <button onclick="closeQuizModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl font-bold">&times;</button>
+        <!-- 45s QUESTION TIMER DISPLAY -->
+        <div class="flex items-center gap-2">
+          <div id="timerContainer" class="hidden px-3 py-1 rounded-xl bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 text-xs font-extrabold flex items-center gap-1.5">
+            ⏱️ <span id="timerCountdown">45</span>s
+          </div>
+          <button onclick="closeQuizModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl font-bold">&times;</button>
+        </div>
       </div>
 
       <div id="quizQuestionBody" class="p-6 overflow-y-auto space-y-4 flex-1 relative">
@@ -303,6 +309,55 @@
     let userAnswers = {};
     let lockedQuestions = {};
     let currentQuestionIndex = 0;
+
+    // --- TIMER STATE MANAGEMENT ---
+    let questionTimer = null;
+    let timeLeft = 45;
+
+    function startQuestionTimer() {
+      stopQuestionTimer();
+      timeLeft = 45;
+
+      const timerBox = document.getElementById("timerContainer");
+      const timerDisplay = document.getElementById("timerCountdown");
+      if (timerBox) timerBox.classList.remove("hidden");
+      if (timerDisplay) timerDisplay.innerText = timeLeft;
+
+      questionTimer = setInterval(() => {
+        timeLeft--;
+        if (timerDisplay) timerDisplay.innerText = timeLeft;
+
+        if (timeLeft <= 0) {
+          stopQuestionTimer();
+          handleTimeExpired();
+        }
+      }, 1000);
+    }
+
+    function stopQuestionTimer() {
+      if (questionTimer) {
+        clearInterval(questionTimer);
+        questionTimer = null;
+      }
+    }
+
+    function handleTimeExpired() {
+      const idx = currentQuestionIndex;
+      if (lockedQuestions[idx]) return;
+
+      const q = activeQuestions[idx];
+      userAnswers[idx] = { 
+        selected: null, 
+        feedbackMsg: "⏰ Time's up!" 
+      };
+      lockedQuestions[idx] = true;
+
+      const answeredCount = Object.keys(lockedQuestions).length;
+      saveUnitProgress(activeQuiz.quizId, answeredCount, activeQuestions.length);
+
+      renderQuizQuestions();
+      loadQuizIndex();
+    }
 
     // --- THEME SWITCHER LOGIC ---
     function initTheme() {
@@ -591,6 +646,15 @@
       const idx = currentQuestionIndex;
       const q = activeQuestions[idx];
 
+      // Manage 45s timer state
+      if (!lockedQuestions[idx]) {
+        startQuestionTimer();
+      } else {
+        stopQuestionTimer();
+        const timerBox = document.getElementById("timerContainer");
+        if (timerBox) timerBox.classList.add("hidden");
+      }
+
       let correctAnswersCount = 0;
       Object.keys(lockedQuestions).forEach(qKey => {
         if (userAnswers[qKey]?.selected === activeQuestions[qKey].correctOption) {
@@ -701,6 +765,8 @@
     function chooseAnswer(qIdx, selectedOptId, correctOptId) {
       if (lockedQuestions[qIdx]) return;
 
+      stopQuestionTimer();
+
       const isCorrect = selectedOptId === correctOptId;
       const msgList = isCorrect ? PRAISE_MESSAGES : ENCOURAGEMENT_MESSAGES;
       const feedbackMsg = msgList[Math.floor(Math.random() * msgList.length)];
@@ -717,6 +783,8 @@
 
     async function submitQuiz() {
       if (!lockedQuestions[currentQuestionIndex]) return;
+
+      stopQuestionTimer();
 
       let scoreCount = 0;
       activeQuestions.forEach((q, idx) => {
@@ -748,6 +816,7 @@
     }
 
     function closeQuizModal() {
+      stopQuestionTimer();
       document.getElementById("quizModal").classList.add("hidden");
     }
 
