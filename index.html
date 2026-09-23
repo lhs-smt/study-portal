@@ -578,6 +578,11 @@
 
         list.forEach(q => {
           const prog = getSavedUnitProgress(q.quizId);
+          
+          const studyBtn = q.notesUrl 
+            ? `<a href="${q.notesUrl}" target="_blank" class="w-full text-center py-2 px-3 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer">📖 Study Notes</a>`
+            : `<button disabled class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-900/50 text-slate-400 dark:text-slate-600 border border-slate-200 dark:border-slate-800/50 cursor-not-allowed">📖 Study Notes Unavailable</button>`;
+
           grid.innerHTML += `
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 card-shadow flex flex-col justify-between">
               <div>
@@ -597,9 +602,12 @@
                 </div>
               </div>
 
-              <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.title}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all cursor-pointer">
-                ${prog.answered > 0 ? 'Continue Unit Quiz &rarr;' : 'Start Unit Quiz &rarr;'}
-              </button>
+              <div class="space-y-2 mt-2">
+                ${studyBtn}
+                <button onclick="startQuiz('${q.sheetId}', '${q.subject}', '${q.title}', '${q.quizId}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all cursor-pointer">
+                  ${prog.answered > 0 ? 'Continue Unit Quiz &rarr;' : 'Start Unit Quiz &rarr;'}
+                </button>
+              </div>
             </div>
           `;
         });
