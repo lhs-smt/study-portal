@@ -245,7 +245,7 @@
       <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
         <div>
           <span id="quizSubjectTag" class="px-2.5 py-0.5 text-[10px] font-bold rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/50">Subject</span>
-          <h3 id="quizModalTitle" class="text-base font-bold text-slate-900 dark:text-white mt-1">Unit Quiz</h3>
+          <h3 id="quizModalTitle" class="text-base font-bold text-slate-900 dark:text-white mt-1">Quiz</h3>
         </div>
         <!-- 45s QUESTION TIMER DISPLAY -->
         <div class="flex items-center gap-2">
@@ -580,8 +580,8 @@
           const prog = getSavedUnitProgress(q.quizId);
           
           const studyBtn = q.notesUrl 
-            ? `<a href="${q.notesUrl}" target="_blank" class="w-full text-center block py-2.5 px-3 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer">📖 Study Notes</a>`
-            : `<button disabled class="w-full py-2.5 px-3 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-900/50 text-slate-400 dark:text-slate-600 border border-slate-200 dark:border-slate-800/50 cursor-not-allowed">📖 Study Notes Unavailable</button>`;
+            ? `<a href="${q.notesUrl}" target="_blank" class="w-full text-center block py-2.5 px-3 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer">Study</a>`
+            : `<button disabled class="w-full py-2.5 px-3 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-900/50 text-slate-400 dark:text-slate-600 border border-slate-200 dark:border-slate-800/50 cursor-not-allowed">Notes Unavailable</button>`;
 
           grid.innerHTML += `
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 card-shadow flex flex-col justify-between">
