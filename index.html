@@ -482,9 +482,9 @@
         }
 
         data.forEach(r => {
-          // Resolve student common name with fallback to full name, parsed name, or email
+          // Resolve student common name with fallback to full name, or parsed name
           let displayName = r.commonName || r.name;
-          if (!displayName && r.email) {
+          if (!displayName && r.commonName) {
             displayName = r.email;
           } else if (displayName && !r.commonName) {
             const parts = displayName.trim().split(" ");
