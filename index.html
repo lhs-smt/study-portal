@@ -23,7 +23,6 @@
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     
-    /* Dynamic shadows for light/dark modes */
     .card-shadow { 
       box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08); 
     }
@@ -34,7 +33,6 @@
       box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.18); 
     }
 
-    /* Independent Popup: Fly in from below -> pause -> fly up & away */
     @keyframes flyInAndAway {
       0% {
         opacity: 0;
@@ -81,7 +79,6 @@
   <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <!-- SCHOOL LOGO -->
         <img 
           src="logo.png" 
           alt="L. Hithadhoo School Logo" 
@@ -98,7 +95,6 @@
 
       <div id="navUserSection" class="flex items-center gap-3">
         <div id="userProfileTag" class="flex items-center gap-2">
-          <!-- Populated dynamically -->
         </div>
       </div>
     </div>
@@ -108,7 +104,6 @@
   <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
     <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
       <div class="bg-gradient-to-r from-emerald-700 to-teal-800 p-6 text-white text-center border-b border-emerald-600/30">
-        <!-- SCHOOL LOGO ON LOGIN MODAL -->
         <div class="inline-flex h-14 w-14 rounded-2xl bg-white p-2 items-center justify-center mb-3 shadow-lg">
           <img 
             src="logo.png" 
@@ -171,7 +166,6 @@
 
     <!-- DASHBOARD -->
     <section id="dashboardSection" class="space-y-5">
-      <!-- School Banner -->
       <div id="teacherBanner" class="hidden p-4 rounded-2xl bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-600/50 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="h-9 w-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-extrabold text-sm">SMT</span>
@@ -182,7 +176,6 @@
         </div>
       </div>
 
-      <!-- Student Stats -->
       <div id="studentStatsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow">
           <div class="text-slate-500 dark:text-slate-400 text-xs font-bold mb-2">BEST SCORE</div>
@@ -200,7 +193,6 @@
         </div>
       </div>
 
-      <!-- Teacher Table -->
       <div id="teacherTableContainer" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 card-shadow">
         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-3">Student Performance Overview</h3>
         <div class="overflow-x-auto">
@@ -247,7 +239,6 @@
           <span id="quizSubjectTag" class="px-2.5 py-0.5 text-[10px] font-bold rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/50">Subject</span>
           <h3 id="quizModalTitle" class="text-base font-bold text-slate-900 dark:text-white mt-1">Quiz</h3>
         </div>
-        <!-- 45s QUESTION TIMER DISPLAY (MCQ Only) -->
         <div class="flex items-center gap-2">
           <div id="timerContainer" class="hidden px-3 py-1 rounded-xl bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 text-xs font-extrabold flex items-center gap-1.5">
             ⏱️ <span id="timerCountdown">45</span>s
@@ -257,7 +248,6 @@
       </div>
 
       <div id="quizQuestionBody" class="p-6 overflow-y-auto space-y-4 flex-1 relative">
-        <!-- Questions -->
       </div>
 
       <div class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex justify-end items-center">
@@ -271,7 +261,6 @@
     </div>
   </div>
 
-  <!-- FLOATING BOTTOM RIGHT THEME TOGGLE BUTTON -->
   <button 
     onclick="toggleTheme()" 
     id="themeToggleBtn"
@@ -310,7 +299,6 @@
     let lockedQuestions = {};
     let currentQuestionIndex = 0;
 
-    // --- TIMER STATE MANAGEMENT ---
     let questionTimer = null;
     let timeLeft = 45;
 
@@ -358,7 +346,6 @@
       loadQuizIndex();
     }
 
-    // --- THEME SWITCHER LOGIC ---
     function initTheme() {
       const savedTheme = localStorage.getItem("lhs_theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -680,7 +667,6 @@
       const q = activeQuestions[idx];
       const isWritten = !q.options || q.options.length === 0 || !q.options[0].text;
 
-      // Handle timer visibility
       if (!isWritten && !lockedQuestions[idx]) {
         startQuestionTimer();
       } else {
@@ -693,15 +679,13 @@
       let totalMarksEarned = 0;
       let totalPossibleMarks = 0;
 
-      activeQuestions.forEach((item, qKey) => {
-        const maxQMarks = Number(item.maxMarks) || 4;
-        totalPossibleMarks += maxQMarks;
-        if (lockedQuestions[qKey]) {
-          if (item.options && item.options.length > 0 && item.options[0].text) {
-            if (userAnswers[qKey]?.selected === item.correctOption) correctAnswersCount++;
-          } else {
-            totalMarksEarned += Number(userAnswers[qKey]?.marksAwarded) || 0;
-          }
+      Object.keys(lockedQuestions).forEach(qKey => {
+        const item = activeQuestions[qKey];
+        if (item.options && item.options.length > 0 && item.options[0].text) {
+          if (userAnswers[qKey]?.selected === item.correctOption) correctAnswersCount++;
+        } else {
+          totalMarksEarned += (userAnswers[qKey]?.marksAwarded || 0);
+          totalPossibleMarks += (item.maxMarks || 4);
         }
       });
 
@@ -725,7 +709,6 @@
       `;
       qCard.appendChild(qHeader);
 
-      // Render Case Study if available
       if (q.caseStudy) {
         const caseBox = document.createElement("div");
         caseBox.className = "p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl text-xs text-amber-900 dark:text-amber-200 leading-relaxed";
@@ -742,7 +725,6 @@
         qCard.innerHTML += `<img src="${q.imageUrl}" class="max-w-full rounded-lg my-2 border border-slate-200 dark:border-slate-800" />`;
       }
 
-      // WRITTEN QUESTION INTERFACE
       if (isWritten) {
         const savedData = userAnswers[idx] || {};
         const isLocked = !!lockedQuestions[idx];
@@ -775,34 +757,17 @@
 
         qCard.appendChild(writtenContainer);
 
-        // DISPLAY AI EVALUATION RESULTS
         if (isLocked && savedData.eval) {
           const evalRes = savedData.eval;
           const evalBox = document.createElement("div");
           evalBox.className = "p-4 bg-slate-900 dark:bg-slate-950 border border-emerald-500/40 rounded-xl text-xs space-y-3 mt-3 animate-float-in text-slate-200";
 
-          const maxPossible = Number(evalRes.maxMarks ?? q.maxMarks ?? 4);
-          const earnedVal = Number(savedData.marksAwarded);
-          const marksLost = maxPossible - earnedVal;
-          const isFullMarks = earnedVal === maxPossible;
-
           evalBox.innerHTML = `
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
               <span class="font-bold text-emerald-400 text-sm">Cambridge AI Examiner Result</span>
-              <div class="flex items-center gap-2">
-                <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 font-extrabold rounded-lg border border-emerald-500/30">
-                  Earned: ${earnedVal} / ${maxPossible}
-                </span>
-                ${isFullMarks ? `
-                  <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 font-extrabold rounded-lg border border-emerald-500/30">
-                    Full Marks! 🎉
-                  </span>
-                ` : `
-                  <span class="px-2.5 py-1 bg-rose-500/20 text-rose-300 font-extrabold rounded-lg border border-rose-500/30">
-                    Lost: ${marksLost}
-                  </span>
-                `}
-              </div>
+              <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 font-extrabold rounded-lg border border-emerald-500/30">
+                Score: ${evalRes.marksAwarded} / ${evalRes.maxMarks || q.maxMarks || 4}
+              </span>
             </div>
 
             ${evalRes.breakdown ? `
@@ -822,19 +787,10 @@
               </div>
             ` : ''}
 
-            ${evalRes.lostMarksReason ? `
-              <div class="p-3 bg-rose-950/30 border border-rose-800/40 rounded-lg">
-                <strong class="text-rose-400 block mb-1">❌ Reason for Lost Marks:</strong>
-                <p class="text-slate-300 leading-relaxed">${evalRes.lostMarksReason}</p>
-              </div>
-            ` : ''}
-
-            ${evalRes.howToImprove || evalRes.constructiveFeedback ? `
-              <div class="p-3 bg-emerald-950/40 border border-emerald-800/50 rounded-lg">
-                <strong class="text-emerald-400 block mb-1">💡 How to Gain Full Marks Next Time:</strong>
-                <p class="text-slate-300 leading-relaxed">${evalRes.howToImprove || evalRes.constructiveFeedback}</p>
-              </div>
-            ` : ''}
+            <div class="p-3 bg-emerald-950/40 border border-emerald-800/50 rounded-lg">
+              <strong class="text-emerald-400 block mb-1">💡 Examiner Feedback:</strong>
+              <p class="text-slate-300 leading-relaxed">${evalRes.constructiveFeedback || 'Good effort.'}</p>
+            </div>
 
             ${evalRes.modelAnswer ? `
               <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-lg">
@@ -848,7 +804,6 @@
         }
 
       } else {
-        // MULTIPLE CHOICE INTERFACE
         const optsContainer = document.createElement("div");
         optsContainer.className = "space-y-1.5 mt-2";
 
@@ -949,14 +904,10 @@
 
         const evalRes = await res.json();
 
-        // Extract score dynamically checking multiple possible returned keys
-        const awarded = Number(evalRes.marksAwarded ?? evalRes.score ?? evalRes.marks ?? 0);
-        const maxM = Number(evalRes.maxMarks ?? q.maxMarks ?? 4);
-
         userAnswers[qIdx] = {
           text: text,
-          marksAwarded: awarded,
-          maxMarks: maxM,
+          marksAwarded: evalRes.marksAwarded || 0,
+          maxMarks: evalRes.maxMarks || q.maxMarks || 4,
           eval: evalRes
         };
 
