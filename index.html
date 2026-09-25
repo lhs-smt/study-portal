@@ -693,13 +693,15 @@
       let totalMarksEarned = 0;
       let totalPossibleMarks = 0;
 
-      Object.keys(lockedQuestions).forEach(qKey => {
-        const item = activeQuestions[qKey];
-        if (item.options && item.options.length > 0 && item.options[0].text) {
-          if (userAnswers[qKey]?.selected === item.correctOption) correctAnswersCount++;
-        } else {
-          totalMarksEarned += (userAnswers[qKey]?.marksAwarded || 0);
-          totalPossibleMarks += (item.maxMarks || 4);
+      activeQuestions.forEach((item, qKey) => {
+        const maxQMarks = Number(item.maxMarks) || 4;
+        totalPossibleMarks += maxQMarks;
+        if (lockedQuestions[qKey]) {
+          if (item.options && item.options.length > 0 && item.options[0].text) {
+            if (userAnswers[qKey]?.selected === item.correctOption) correctAnswersCount++;
+          } else {
+            totalMarksEarned += Number(userAnswers[qKey]?.marksAwarded) || 0;
+          }
         }
       });
 
@@ -779,22 +781,25 @@
           const evalBox = document.createElement("div");
           evalBox.className = "p-4 bg-slate-900 dark:bg-slate-950 border border-emerald-500/40 rounded-xl text-xs space-y-3 mt-3 animate-float-in text-slate-200";
 
-          const marksLost = evalRes.marksLost !== undefined ? evalRes.marksLost : ((evalRes.maxMarks || q.maxMarks || 4) - evalRes.marksAwarded);
+          const maxPossible = Number(evalRes.maxMarks ?? q.maxMarks ?? 4);
+          const earnedVal = Number(savedData.marksAwarded);
+          const marksLost = maxPossible - earnedVal;
+          const isFullMarks = earnedVal === maxPossible;
 
           evalBox.innerHTML = `
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
               <span class="font-bold text-emerald-400 text-sm">Cambridge AI Examiner Result</span>
               <div class="flex items-center gap-2">
                 <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 font-extrabold rounded-lg border border-emerald-500/30">
-                  Earned: ${evalRes.marksAwarded} / ${evalRes.maxMarks || q.maxMarks || 4}
+                  Earned: ${earnedVal} / ${maxPossible}
                 </span>
-                ${marksLost > 0 ? `
-                  <span class="px-2.5 py-1 bg-rose-500/20 text-rose-300 font-extrabold rounded-lg border border-rose-500/30">
-                    Lost: ${marksLost}
-                  </span>
-                ` : `
+                ${isFullMarks ? `
                   <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 font-extrabold rounded-lg border border-emerald-500/30">
                     Full Marks! 🎉
+                  </span>
+                ` : `
+                  <span class="px-2.5 py-1 bg-rose-500/20 text-rose-300 font-extrabold rounded-lg border border-rose-500/30">
+                    Lost: ${marksLost}
                   </span>
                 `}
               </div>
@@ -944,10 +949,14 @@
 
         const evalRes = await res.json();
 
+        // Extract score dynamically checking multiple possible returned keys
+        const awarded = Number(evalRes.marksAwarded ?? evalRes.score ?? evalRes.marks ?? 0);
+        const maxM = Number(evalRes.maxMarks ?? q.maxMarks ?? 4);
+
         userAnswers[qIdx] = {
           text: text,
-          marksAwarded: evalRes.marksAwarded || 0,
-          maxMarks: evalRes.maxMarks || q.maxMarks || 4,
+          marksAwarded: awarded,
+          maxMarks: maxM,
           eval: evalRes
         };
 
