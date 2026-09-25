@@ -23,52 +23,27 @@
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     
-    /* Dynamic shadows for light/dark modes */
     .card-shadow { 
       box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08); 
     }
     .dark .card-shadow { 
       box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5); 
     }
-    .card-shadow:hover { 
-      box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.18); 
-    }
 
-    /* Independent Popup: Fly in from below -> pause -> fly up & away */
     @keyframes flyInAndAway {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, 25px) scale(0.9);
-      }
-      18% {
-        opacity: 1;
-        transform: translate(-50%, 0) scale(1.02);
-      }
-      25% {
-        transform: translate(-50%, 0) scale(1);
-      }
-      75% {
-        opacity: 1;
-        transform: translate(-50%, 0) scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -35px) scale(0.95);
-      }
+      0% { opacity: 0; transform: translate(-50%, 25px) scale(0.9); }
+      18% { opacity: 1; transform: translate(-50%, 0) scale(1.02); }
+      25% { transform: translate(-50%, 0) scale(1); }
+      75% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -35px) scale(0.95); }
     }
     .animate-fly-popup {
       animation: flyInAndAway 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
     @keyframes floatInUp {
-      0% {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      0% { opacity: 0; transform: translateY(12px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
     .animate-float-in {
       animation: floatInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -81,7 +56,6 @@
   <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <!-- SCHOOL LOGO -->
         <img 
           src="logo.png" 
           alt="L. Hithadhoo School Logo" 
@@ -97,9 +71,7 @@
       </div>
 
       <div id="navUserSection" class="flex items-center gap-3">
-        <div id="userProfileTag" class="flex items-center gap-2">
-          <!-- Populated dynamically -->
-        </div>
+        <div id="userProfileTag" class="flex items-center gap-2"></div>
       </div>
     </div>
   </header>
@@ -108,7 +80,6 @@
   <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
     <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
       <div class="bg-gradient-to-r from-emerald-700 to-teal-800 p-6 text-white text-center border-b border-emerald-600/30">
-        <!-- SCHOOL LOGO ON LOGIN MODAL -->
         <div class="inline-flex h-14 w-14 rounded-2xl bg-white p-2 items-center justify-center mb-3 shadow-lg">
           <img 
             src="logo.png" 
@@ -129,7 +100,7 @@
             id="emailInput" 
             required 
             placeholder="name@lhithadhooschool.edu.mv"
-            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 outline-none"
           />
         </div>
 
@@ -140,14 +111,14 @@
             id="passwordInput" 
             required 
             placeholder="••••••••"
-            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 outline-none"
           />
         </div>
 
         <button 
           type="submit" 
           id="loginBtn"
-          class="w-full py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-emerald-400 hover:bg-emerald-300 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+          class="w-full py-2.5 rounded-xl font-bold text-xs text-slate-950 bg-emerald-400 hover:bg-emerald-300 shadow-lg transition-all cursor-pointer"
         >
           Authenticate &amp; Enter Portal &rarr;
         </button>
@@ -171,7 +142,6 @@
 
     <!-- DASHBOARD -->
     <section id="dashboardSection" class="space-y-5">
-      <!-- School Banner -->
       <div id="teacherBanner" class="hidden p-4 rounded-2xl bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-600/50 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="h-9 w-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-extrabold text-sm">SMT</span>
@@ -182,7 +152,6 @@
         </div>
       </div>
 
-      <!-- Student Stats -->
       <div id="studentStatsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 card-shadow">
           <div class="text-slate-500 dark:text-slate-400 text-xs font-bold mb-2">BEST SCORE</div>
@@ -200,7 +169,6 @@
         </div>
       </div>
 
-      <!-- Teacher Table -->
       <div id="teacherTableContainer" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 card-shadow">
         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-3">Student Performance Overview</h3>
         <div class="overflow-x-auto">
@@ -247,7 +215,6 @@
           <span id="quizSubjectTag" class="px-2.5 py-0.5 text-[10px] font-bold rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/50">Subject</span>
           <h3 id="quizModalTitle" class="text-base font-bold text-slate-900 dark:text-white mt-1">Quiz</h3>
         </div>
-        <!-- 45s QUESTION TIMER DISPLAY (MCQ Only) -->
         <div class="flex items-center gap-2">
           <div id="timerContainer" class="hidden px-3 py-1 rounded-xl bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 text-xs font-extrabold flex items-center gap-1.5">
             ⏱️ <span id="timerCountdown">45</span>s
@@ -256,9 +223,7 @@
         </div>
       </div>
 
-      <div id="quizQuestionBody" class="p-6 overflow-y-auto space-y-4 flex-1 relative">
-        <!-- Questions -->
-      </div>
+      <div id="quizQuestionBody" class="p-6 overflow-y-auto space-y-4 flex-1 relative"></div>
 
       <div class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex justify-end items-center">
         <button id="nextBtn" onclick="nextQuestion()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer">
@@ -271,7 +236,7 @@
     </div>
   </div>
 
-  <!-- FLOATING BOTTOM RIGHT THEME TOGGLE BUTTON -->
+  <!-- FLOATING THEME TOGGLE BUTTON -->
   <button 
     onclick="toggleTheme()" 
     id="themeToggleBtn"
@@ -281,7 +246,7 @@
     <span id="themeIcon">☀️</span>
   </button>
 
-  <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 text-center text-xs text-slate-500 dark:text-slate-500">
+  <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 text-center text-xs text-slate-500">
     L. Hithadhoo School - Studyspace &copy; 2026
   </footer>
 
@@ -310,7 +275,6 @@
     let lockedQuestions = {};
     let currentQuestionIndex = 0;
 
-    // --- TIMER STATE MANAGEMENT ---
     let questionTimer = null;
     let timeLeft = 45;
 
@@ -358,7 +322,6 @@
       loadQuizIndex();
     }
 
-    // --- THEME SWITCHER LOGIC ---
     function initTheme() {
       const savedTheme = localStorage.getItem("lhs_theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -656,13 +619,7 @@
       const fetchedQuestions = await res.json();
       
       if (Array.isArray(fetchedQuestions)) {
-        const shuffled = shuffleArray(fetchedQuestions).map(q => {
-          if (q.options && Array.isArray(q.options)) {
-            q.options = shuffleArray([...q.options]);
-          }
-          return q;
-        });
-        activeQuestions = shuffled.slice(0, 30);
+        activeQuestions = fetchedQuestions.slice(0, 30);
       } else {
         activeQuestions = [];
       }
@@ -678,9 +635,8 @@
 
       const idx = currentQuestionIndex;
       const q = activeQuestions[idx];
-      const isWritten = !q.options || q.options.length === 0 || !q.options[0].text;
+      const isWritten = !q.options || q.options.length === 0;
 
-      // Handle timer visibility
       if (!isWritten && !lockedQuestions[idx]) {
         startQuestionTimer();
       } else {
@@ -689,23 +645,17 @@
         if (timerBox) timerBox.classList.add("hidden");
       }
 
-      let correctAnswersCount = 0;
       let totalMarksEarned = 0;
       let totalPossibleMarks = 0;
 
       Object.keys(lockedQuestions).forEach(qKey => {
         const item = activeQuestions[qKey];
-        if (item.options && item.options.length > 0 && item.options[0].text) {
-          if (userAnswers[qKey]?.selected === item.correctOption) correctAnswersCount++;
-        } else {
-          totalMarksEarned += (userAnswers[qKey]?.marksAwarded || 0);
-          totalPossibleMarks += (item.maxMarks || 4);
-        }
+        totalMarksEarned += Number(userAnswers[qKey]?.marksAwarded || 0);
+        totalPossibleMarks += Number(item.maxMarks || 6);
       });
 
-      const progressPercent = isWritten
-        ? (totalPossibleMarks > 0 ? Math.round((totalMarksEarned / totalPossibleMarks) * 100) : 0)
-        : Math.round((correctAnswersCount / activeQuestions.length) * 100);
+      const maxQuestionMarks = q.maxMarks || 6;
+      const progressPercent = totalPossibleMarks > 0 ? Math.round((totalMarksEarned / totalPossibleMarks) * 100) : 0;
 
       const qCard = document.createElement("div");
       qCard.className = "p-4 border border-slate-200 dark:border-slate-800 rounded-xl space-y-3 bg-slate-50 dark:bg-slate-950 relative";
@@ -715,7 +665,7 @@
       qHeader.innerHTML = `
         <div class="flex justify-between items-center text-[11px] font-bold">
           <span class="text-emerald-600 dark:text-emerald-400">Question ${idx + 1} of ${activeQuestions.length}</span>
-          <span class="text-slate-500 dark:text-slate-400">${isWritten ? `Earned Marks: ${totalMarksEarned}/${totalPossibleMarks}` : `Score Progress: ${correctAnswersCount}/${activeQuestions.length}`} (${progressPercent}%)</span>
+          <span class="text-slate-500 dark:text-slate-400">Earned Marks: ${userAnswers[idx]?.marksAwarded !== undefined ? userAnswers[idx].marksAwarded : 0}/${maxQuestionMarks} (${progressPercent}%)</span>
         </div>
         <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-900 rounded-full overflow-hidden border border-slate-300 dark:border-slate-800">
           <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${progressPercent}%"></div>
@@ -723,144 +673,112 @@
       `;
       qCard.appendChild(qHeader);
 
-      // Render Case Study if available
+      // CASE STUDY DISPLAY
       if (q.caseStudy) {
         const caseBox = document.createElement("div");
-        caseBox.className = "p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl text-xs text-amber-900 dark:text-amber-200 leading-relaxed";
+        caseBox.className = "p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl text-xs text-amber-900 dark:text-amber-200 leading-relaxed shadow-sm";
         caseBox.innerHTML = `<strong class="text-amber-700 dark:text-amber-400 block mb-1">📖 Case Study Context:</strong>${q.caseStudy}`;
         qCard.appendChild(caseBox);
       }
 
       const qTitle = document.createElement("h4");
       qTitle.className = "text-sm font-bold text-slate-900 dark:text-white";
-      qTitle.innerText = `Q${idx + 1}. ${q.question} ${q.maxMarks ? `[${q.maxMarks} marks]` : ''}`;
+      qTitle.innerText = `Q${idx + 1}. ${q.question} [${maxQuestionMarks} marks]`;
       qCard.appendChild(qTitle);
 
       if (q.imageUrl) {
         qCard.innerHTML += `<img src="${q.imageUrl}" class="max-w-full rounded-lg my-2 border border-slate-200 dark:border-slate-800" />`;
       }
 
-      // WRITTEN QUESTION INTERFACE
-      if (isWritten) {
-        const savedData = userAnswers[idx] || {};
-        const isLocked = !!lockedQuestions[idx];
+      const savedData = userAnswers[idx] || {};
+      const isLocked = !!lockedQuestions[idx];
 
-        const writtenContainer = document.createElement("div");
-        writtenContainer.className = "space-y-3 mt-2";
+      const writtenContainer = document.createElement("div");
+      writtenContainer.className = "space-y-3 mt-2";
 
-        writtenContainer.innerHTML = `
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Your Written Answer:</label>
-            <textarea 
-              id="writtenInput_${idx}" 
-              rows="4" 
-              ${isLocked ? 'disabled' : ''} 
-              placeholder="Type your structured answer here (include knowledge, application, and reasoning)..."
-              class="w-full p-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 outline-none leading-relaxed"
-            >${savedData.text || ''}</textarea>
+      writtenContainer.innerHTML = `
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Your Written Answer:</label>
+          <textarea 
+            id="writtenInput_${idx}" 
+            rows="4" 
+            ${isLocked ? 'disabled' : ''} 
+            placeholder="Type your structured answer here (include knowledge, application, and reasoning)..."
+            class="w-full p-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 outline-none leading-relaxed"
+          >${savedData.text || ''}</textarea>
+        </div>
+
+        ${!isLocked ? `
+          <button 
+            id="evalBtn_${idx}" 
+            onclick="submitWrittenAnswer(${idx})"
+            class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+          >
+            <span>✨ Evaluate with Cambridge AI Examiner</span>
+          </button>
+        ` : ''}
+      `;
+
+      qCard.appendChild(writtenContainer);
+
+      if (isLocked && savedData.eval) {
+        const evalRes = savedData.eval;
+        const maxM = Number(evalRes.maxMarks || maxQuestionMarks);
+        const earnedM = Number(evalRes.marksAwarded !== undefined ? evalRes.marksAwarded : 0);
+        const lostM = Number(evalRes.marksLost !== undefined ? evalRes.marksLost : (maxM - earnedM));
+
+        const evalBox = document.createElement("div");
+        evalBox.className = "p-4 bg-slate-900 dark:bg-slate-950 border border-emerald-500/40 rounded-xl text-xs space-y-3 mt-3 animate-float-in text-slate-200";
+
+        evalBox.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span class="font-bold text-emerald-400 text-sm">Cambridge AI Examiner Result</span>
+            <div class="flex gap-2">
+              <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 font-extrabold rounded-lg border border-emerald-500/30">
+                Score: ${earnedM} / ${maxM}
+              </span>
+              ${lostM > 0 ? `
+                <span class="px-2.5 py-1 bg-rose-500/20 text-rose-300 font-extrabold rounded-lg border border-rose-500/30">
+                  Lost: -${lostM}${lostM === 1 ? 'mark' : 'marks'}
+                </span>
+              ` : ''}
+            </div>
           </div>
 
-          ${!isLocked ? `
-            <button 
-              id="evalBtn_${idx}" 
-              onclick="submitWrittenAnswer(${idx})"
-              class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span>✨ Evaluate with Cambridge AI Examiner</span>
-            </button>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+            <div class="p-2 bg-slate-800/60 rounded-lg border border-slate-700/50">
+              <strong class="text-amber-400 block mb-0.5">AO1 Knowledge:</strong>
+              <span class="text-slate-300">${evalRes.breakdown?.knowledge || 'Evaluated'}</span>
+            </div>
+            <div class="p-2 bg-slate-800/60 rounded-lg border border-slate-700/50">
+              <strong class="text-emerald-400 block mb-0.5">AO2 Application:</strong>
+              <span class="text-slate-300">${evalRes.breakdown?.application || 'Evaluated'}</span>
+            </div>
+            <div class="p-2 bg-slate-800/60 rounded-lg border border-slate-700/50">
+              <strong class="text-sky-400 block mb-0.5">AO3 Analysis:</strong>
+              <span class="text-slate-300">${evalRes.breakdown?.analysis || 'Evaluated'}</span>
+            </div>
+          </div>
+
+          ${lostM > 0 ? `
+            <div class="p-3 bg-rose-950/30 border border-rose-800/40 rounded-lg">
+              <strong class="text-rose-400 block mb-1">🔍 Why ${lostM} Mark(s) Were Lost:</strong>
+              <p class="text-slate-300 leading-relaxed">${evalRes.lostMarksReason}</p>
+            </div>
           ` : ''}
+
+          <div class="p-3 bg-emerald-950/40 border border-emerald-800/50 rounded-lg">
+            <strong class="text-emerald-400 block mb-1">💡 How to Improve &amp; Earn Full Marks:</strong>
+            <p class="text-slate-300 leading-relaxed">${evalRes.howToImprove}</p>
+          </div>
+
+          <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-lg">
+            <strong class="text-amber-300 block mb-1">📝 Model Cambridge Answer:</strong>
+            <p class="text-slate-300 italic leading-relaxed">${evalRes.modelAnswer}</p>
+          </div>
         `;
 
-        qCard.appendChild(writtenContainer);
-
-        // DISPLAY AI EVALUATION RESULTS
-        if (isLocked && savedData.eval) {
-          const evalRes = savedData.eval;
-          const evalBox = document.createElement("div");
-          evalBox.className = "p-4 bg-slate-900 dark:bg-slate-950 border border-emerald-500/40 rounded-xl text-xs space-y-3 mt-3 animate-float-in text-slate-200";
-
-          evalBox.innerHTML = `
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span class="font-bold text-emerald-400 text-sm">Cambridge AI Examiner Result</span>
-              <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 font-extrabold rounded-lg border border-emerald-500/30">
-                Score: ${evalRes.marksAwarded} / ${evalRes.maxMarks || q.maxMarks || 4}
-              </span>
-            </div>
-
-            ${evalRes.breakdown ? `
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
-                <div class="p-2 bg-slate-800/60 rounded-lg border border-slate-700/50">
-                  <strong class="text-amber-400 block mb-0.5">AO1 Knowledge:</strong>
-                  <span class="text-slate-300">${evalRes.breakdown.knowledge || 'N/A'}</span>
-                </div>
-                <div class="p-2 bg-slate-800/60 rounded-lg border border-slate-700/50">
-                  <strong class="text-emerald-400 block mb-0.5">AO2 Application:</strong>
-                  <span class="text-slate-300">${evalRes.breakdown.application || 'N/A'}</span>
-                </div>
-                <div class="p-2 bg-slate-800/60 rounded-lg border border-slate-700/50">
-                  <strong class="text-sky-400 block mb-0.5">AO3 Analysis:</strong>
-                  <span class="text-slate-300">${evalRes.breakdown.analysis || 'N/A'}</span>
-                </div>
-              </div>
-            ` : ''}
-
-            <div class="p-3 bg-emerald-950/40 border border-emerald-800/50 rounded-lg">
-              <strong class="text-emerald-400 block mb-1">💡 Examiner Feedback:</strong>
-              <p class="text-slate-300 leading-relaxed">${evalRes.constructiveFeedback || 'Good effort.'}</p>
-            </div>
-
-            ${evalRes.modelAnswer ? `
-              <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-lg">
-                <strong class="text-amber-300 block mb-1">📝 Model Cambridge Answer:</strong>
-                <p class="text-slate-300 italic leading-relaxed">${evalRes.modelAnswer}</p>
-              </div>
-            ` : ''}
-          `;
-
-          qCard.appendChild(evalBox);
-        }
-
-      } else {
-        // MULTIPLE CHOICE INTERFACE
-        const optsContainer = document.createElement("div");
-        optsContainer.className = "space-y-1.5 mt-2";
-
-        q.options.forEach(opt => {
-          const btn = document.createElement("button");
-          btn.className = "w-full text-left p-3 rounded-xl border text-xs font-medium transition-all bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-white cursor-pointer";
-          btn.innerText = `${opt.id}. ${opt.text}`;
-
-          if (lockedQuestions[idx]) {
-            btn.disabled = true;
-            btn.classList.remove("cursor-pointer");
-            if (opt.id === q.correctOption) {
-              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-emerald-100 dark:bg-emerald-950/80 border-emerald-500 text-emerald-800 dark:text-emerald-300";
-            }
-            if (userAnswers[idx]?.selected === opt.id && opt.id !== q.correctOption) {
-              btn.className = "w-full text-left p-3 rounded-xl border text-xs font-bold bg-rose-100 dark:bg-rose-950/80 border-rose-500 text-rose-800 dark:text-rose-300";
-            }
-          } else {
-            btn.onclick = () => chooseAnswer(idx, opt.id, q.correctOption);
-          }
-
-          optsContainer.appendChild(btn);
-        });
-
-        qCard.appendChild(optsContainer);
-
-        if (lockedQuestions[idx]) {
-          const feedback = document.createElement("div");
-          feedback.className = "absolute left-1/2 bottom-12 z-20 pointer-events-none transform -translate-x-1/2 px-4 py-2 bg-emerald-900 dark:bg-emerald-950/95 border border-emerald-500 text-emerald-100 dark:text-emerald-200 text-xs font-extrabold rounded-full shadow-2xl backdrop-blur-md animate-fly-popup flex items-center gap-1.5 whitespace-nowrap";
-          feedback.innerText = userAnswers[idx].feedbackMsg;
-          qCard.appendChild(feedback);
-
-          if (q.explanation) {
-            const exp = document.createElement("div");
-            exp.className = "p-2.5 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-xs rounded-lg border border-slate-200 dark:border-slate-800 mt-2 animate-float-in";
-            exp.innerHTML = `<strong class="text-emerald-600 dark:text-emerald-400">Explanation:</strong> ${q.explanation}`;
-            qCard.appendChild(exp);
-          }
-        }
+        qCard.appendChild(evalBox);
       }
 
       container.appendChild(qCard);
@@ -873,20 +791,16 @@
         nextBtn.classList.add("hidden");
         submitBtn.classList.remove("hidden");
         submitBtn.disabled = !isAnswered;
-        if (isAnswered) {
-          submitBtn.className = "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
-        } else {
-          submitBtn.className = "px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-extrabold text-xs rounded-xl transition-all opacity-50 cursor-not-allowed";
-        }
+        submitBtn.className = isAnswered
+          ? "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+          : "px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-extrabold text-xs rounded-xl transition-all opacity-50 cursor-not-allowed";
       } else {
         nextBtn.classList.remove("hidden");
         submitBtn.classList.add("hidden");
         nextBtn.disabled = !isAnswered;
-        if (isAnswered) {
-          nextBtn.className = "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer";
-        } else {
-          nextBtn.className = "px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-extrabold text-xs rounded-xl transition-all opacity-50 cursor-not-allowed";
-        }
+        nextBtn.className = isAnswered
+          ? "px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+          : "px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-extrabold text-xs rounded-xl transition-all opacity-50 cursor-not-allowed";
       }
     }
 
@@ -912,7 +826,7 @@
           caseStudy: q.caseStudy || "",
           markScheme: q.markScheme || "",
           studentAnswer: text,
-          maxMarks: q.maxMarks || 4
+          maxMarks: q.maxMarks || 6
         };
 
         const res = await fetch(GAS_API_URL, {
@@ -921,11 +835,12 @@
         });
 
         const evalRes = await res.json();
+        const scoreVal = Number(evalRes.marksAwarded !== undefined ? evalRes.marksAwarded : 0);
 
         userAnswers[qIdx] = {
           text: text,
-          marksAwarded: evalRes.marksAwarded || 0,
-          maxMarks: evalRes.maxMarks || q.maxMarks || 4,
+          marksAwarded: scoreVal,
+          maxMarks: Number(evalRes.maxMarks || q.maxMarks || 6),
           eval: evalRes
         };
 
@@ -938,7 +853,7 @@
         loadQuizIndex();
 
       } catch (err) {
-        alert("Evaluation error. Please try again.");
+        alert("Evaluation connection error. Please try again.");
         btn.disabled = false;
         btn.innerHTML = `<span>✨ Evaluate with Cambridge AI Examiner</span>`;
       }
@@ -951,53 +866,19 @@
       }
     }
 
-    function chooseAnswer(qIdx, selectedOptId, correctOptId) {
-      if (lockedQuestions[qIdx]) return;
-
-      stopQuestionTimer();
-
-      const isCorrect = selectedOptId === correctOptId;
-      const msgList = isCorrect ? PRAISE_MESSAGES : ENCOURAGEMENT_MESSAGES;
-      const feedbackMsg = msgList[Math.floor(Math.random() * msgList.length)];
-
-      userAnswers[qIdx] = { selected: selectedOptId, feedbackMsg };
-      lockedQuestions[qIdx] = true;
-
-      const answeredCount = Object.keys(lockedQuestions).length;
-      saveUnitProgress(activeQuiz.quizId, answeredCount, activeQuestions.length);
-
-      renderQuizQuestions();
-      loadQuizIndex();
-    }
-
     async function submitQuiz() {
       if (!lockedQuestions[currentQuestionIndex]) return;
 
       stopQuestionTimer();
 
-      let percent = 0;
-      let scoreDetails = "";
-
-      const firstQ = activeQuestions[0];
-      const isWritten = !firstQ.options || firstQ.options.length === 0 || !firstQ.options[0].text;
-
-      if (isWritten) {
-        let earned = 0;
-        let possible = 0;
-        activeQuestions.forEach((q, idx) => {
-          earned += (userAnswers[idx]?.marksAwarded || 0);
-          possible += (q.maxMarks || 4);
-        });
-        percent = possible > 0 ? Math.round((earned / possible) * 100) : 0;
-        scoreDetails = `${earned}/${possible} marks (${percent}%)`;
-      } else {
-        let scoreCount = 0;
-        activeQuestions.forEach((q, idx) => {
-          if (userAnswers[idx]?.selected === q.correctOption) scoreCount++;
-        });
-        percent = Math.round((scoreCount / activeQuestions.length) * 100);
-        scoreDetails = `${scoreCount}/${activeQuestions.length} correct (${percent}%)`;
-      }
+      let earned = 0;
+      let possible = 0;
+      activeQuestions.forEach((q, idx) => {
+        earned += Number(userAnswers[idx]?.marksAwarded || 0);
+        possible += Number(q.maxMarks || 6);
+      });
+      const percent = possible > 0 ? Math.round((earned / possible) * 100) : 0;
+      const scoreDetails = `${earned}/${possible} marks (${percent}%)`;
 
       alert(`Quiz Completed!\nOverall Score: ${scoreDetails}`);
 
