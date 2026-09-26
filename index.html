@@ -941,10 +941,20 @@
 
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
           body: JSON.stringify(payload)
         });
 
         const evalRes = await res.json();
+
+        if (evalRes.error) {
+          alert("Evaluation Error: " + evalRes.error);
+          btn.disabled = false;
+          btn.innerHTML = `<span>✨ Evaluate with Cambridge AI Examiner</span>`;
+          return;
+        }
 
         userAnswers[qIdx] = {
           text: text,
@@ -962,6 +972,7 @@
         loadQuizIndex();
 
       } catch (err) {
+        console.error(err);
         alert("Evaluation error. Please try again.");
         btn.disabled = false;
         btn.innerHTML = `<span>✨ Evaluate with Cambridge AI Examiner</span>`;
@@ -1027,6 +1038,9 @@
 
       await fetch(GAS_API_URL, {
         method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
         body: JSON.stringify({
           action: "submitResult",
           email: currentUser,
@@ -1071,4 +1085,3 @@
   </script>
 </body>
 </html>
-
