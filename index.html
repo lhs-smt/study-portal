@@ -623,7 +623,14 @@
         return;
       }
 
-      const displayName = student.commonName || student.name || student.email;
+      let displayName = student.commonName || student.name;
+      if (!displayName) {
+        displayName = student.email;
+      } else if (!student.commonName && student.name) {
+        const parts = student.name.trim().split(" ");
+        displayName = parts.length > 1 ? parts[1] : parts[0];
+      }
+
       document.getElementById("analyticsStudentName").innerText = `${displayName}'s Analytics`;
       document.getElementById("analyticsBestScore").innerText = (student.bestScore || 0) + "%";
       document.getElementById("analyticsTotalAttempts").innerText = student.attemptsCount || 0;
